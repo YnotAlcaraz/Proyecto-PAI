@@ -1,0 +1,124 @@
+body{
+    margin: 0;
+    font-family: helvetica, Arial, sans-serif;
+    background-color: rgb(216, 225, 238);
+}
+
+div{
+    border: 0px solid black;
+}
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(234, 236, 238);
+    padding: 5px 0 10px 0;
+    align-items: center;
+}
+
+.logo{
+    width: 20%;
+    cursor: pointer;
+    padding-left: 20px;
+}
+
+.titulo{
+    width: 50%;
+    text-align: center;
+}
+
+.usuario{
+    width: 25%;
+    display: flex;
+    justify-content:start;
+    gap: 50px;
+    align-items: center;
+    padding-left: 10px;
+    border-left: 1px solid black;
+    cursor: pointer;
+}
+
+.usuario_imagen{
+    width: 80px;
+    border-radius: 40px;
+}
+
+.categorias{
+    margin: 50px 0 50px 0;
+    display: flex;
+    justify-content: space-around;
+}
+
+.categoria{
+    display: flex;
+    height: 100px;
+    width: 20%;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    font-size:x-large;
+    background-color: rgb(243, 246, 250);
+}
+
+.contenedortablas{
+    display: flex;
+    justify-content: space-around;
+    height: 500px;
+}
+
+.ultimasventas{
+    width: 70%;
+    border-radius: 9px;
+    background-color: rgb(236, 243, 248);
+}
+
+.contenedorventadia{
+    display:flex;
+    justify-content: space-around;
+    height: 400px;
+}
+
+.ventadia{
+    margin-top: 20px;
+    width: 17%;
+    height: 370px;
+    background-color: rgb(255, 255, 255);
+    padding: 10px;
+    text-align: center;
+    border-radius: 9px;
+}
+
+.masvendidos{
+    width: 20%;
+    border-radius: 9px;
+    background-color: rgb(236, 243, 248);
+}
+
+.contenedorobjetomasvendido{
+    display: flex;
+    flex-flow: column;
+    height: 400px;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px;
+}
+
+.objetomasvendido{
+    width: 80%;
+    background-color: rgb(255, 255, 255);
+    height: 50px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 9px;
+}
+
+.titulospan{
+    display: block;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    padding: 5px 0 5px 0;
+    text-align: center;
+    font-weight: bold;
+    width: 100%;
+    background-color: rgb(160, 193, 255);
+}
