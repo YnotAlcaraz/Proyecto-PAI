@@ -5,11 +5,61 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="./Styles/Styles.css">
-    <script src="./Scripts/Scripts.js"></script>
     <title>Proyecto de Administración de Inventarios</title>
 </head>
 <body>
+    <div class="sidebar" id="sidebar">
+        <h1 class="logoside" onclick="onClick()">LOGO</h1>
+        <div class="dashboard">
+            Dashboard
+        </div>
+        <ul class="menulista">
+            <li class="menu" onclick="onClickAdministracion()">
+                Administración
+                <ul class="submenulista administracion" id="administracion">
+                    <li class="submenu">
+                        Usuarios
+                    </li>
+                </ul>
+            </li>
+            <li class="menu" onclick="onClickInventario()">
+                Inventario
+                <ul class="submenulista inventario" id="inventario">
+                    <li class="submenu">
+                        Productos
+                    </li>
+                    <li class="submenu">
+                        Categorías
+                    </li>
+                </ul>
+            </li>
+            <li class="menu" onclick="onClickVentas()">
+                Ventas
+                <ul class="submenulista ventas" id="ventas">
+                    <li class="submenu">
+                        Nueva venta
+                    </li>
+                    <li class="submenu">
+                        Historial de ventas
+                    </li>
+                </ul>
+            </li>
+            <li class="menu" onclick="onClickReportes()">
+                Reportes
+                <ul class="submenulista reportes" id="reportes">
+                    <li class="submenu">
+                        Reporte de ventas
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+
     <div class="header">
+        <div class="menubutton">
+            <img src="Img/placeholder.png" alt="menubutton" class="menubutton" onclick="onClick()">
+        </div>
         <div class="logo">
             <h1>PAI Logo</h1>
         </div>
@@ -56,5 +106,6 @@
             </div>
         </div>
     </div>
+    <script src="./Scripts/Scripts.js"></script>
 </body>
 </html>
