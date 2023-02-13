@@ -114,17 +114,23 @@ div{
 
 .categorias{
     margin: 50px 0 50px 0;
-    display: flex;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-template-rows: auto;
+    grid-column-gap:1px;
+    grid-row-gap: 2px;
+    justify-items: stretch;
+    align-items: stretch;
 }
 
 .categoria{
+    margin-left: 10px;
+    margin-right: 10px;
     display: flex;
-    height: 100px;
-    width: 20%;
+    height: 70px;
     justify-content: center;
     align-items: center;
-    border-radius: 20px;
+    border-radius: 15px;
     font-size:x-large;
     background-color: rgb(243, 246, 250);
     cursor: pointer;
@@ -143,17 +149,23 @@ div{
 }
 
 .contenedorventadia{
-    display:flex;
-    justify-content: space-around;
-    height: 400px;
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+    grid-template-rows: auto;
+    grid-column-gap: 0px;
+    grid-row-gap: 1px;
+    justify-items: stretch;
+    align-items: stretch;
 }
 
 .ventadia{
+    margin-left: 10px;
+    margin-right: 10px;
     margin-top: 20px;
-    width: 17%;
+    width: 90%;
     height: 370px;
     background-color: rgb(255, 255, 255);
-    padding: 10px;
+
     text-align: center;
     border-radius: 9px;
     cursor: pointer;
@@ -166,16 +178,22 @@ div{
 }
 
 .contenedorobjetomasvendido{
-    display: flex;
+
     flex-flow: column;
     height: 400px;
-    justify-content: space-around;
     align-items: center;
     padding: 20px;
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto auto auto;
+    grid-column-gap: 1px;
+    grid-row-gap: 21px;
+    justify-items: stretch;
+    align-items: stretch;
 }
 
 .objetomasvendido{
-    width: 80%;
+    width: 90%;
     background-color: rgb(255, 255, 255);
     height: 50px;
     padding: 10px;
