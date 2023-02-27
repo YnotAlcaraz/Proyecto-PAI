@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { Catalogos } from './components/catalogos/Catalogos'
 import ProductsTable from './components/catalogos/ProductsTable'
 import { Navbar } from './components/Navbar'
+import Sexo from './components/Sexo'
 
 export const App = () => {
   return (
@@ -19,6 +20,7 @@ export const App = () => {
 
             <Route path='/' element={<Navigate to='productos'/>}/>
         </Routes>
+        <Sexo/>
         <ProductsTable/>
     </>
   )
