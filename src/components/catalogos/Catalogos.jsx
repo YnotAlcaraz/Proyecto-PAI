@@ -9,7 +9,7 @@ export const Catalogos = ({
         
     return (
         <>
-            <h1>Tipos de {title}</h1>
+            <h1>Catálogo de {title}</h1>
             <Table dataSource={dataSource} columns={columns} />;
         </>
     )
