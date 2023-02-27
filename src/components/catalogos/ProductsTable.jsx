@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 function ProductsTable() {
+  
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
