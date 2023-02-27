@@ -1,9 +1,19 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
 export const useCatalogoProveedores = () => {
-    useEffect(() => {
+  useEffect(() => {
 
-    }, [])
-    
+  }, []);
 
-}
+  const columnsProveedores = [
+    {
+        title: 'Nombre',
+    },
+    {
+        title: 'Correo Programación'
+    },
+    {
+        
+    },
+  ];
+};
