@@ -50,7 +50,7 @@ export const useCatalogoEmpleados = () => {
             key: '',
         },
         {
-            title: 'Nombre Completo',
+            title: 'Fecha de Inicio',
             dataIndex: '',
             key: '',
         },
