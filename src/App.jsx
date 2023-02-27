@@ -2,68 +2,43 @@ import React, { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Catalogos } from './components/catalogos/Catalogos'
 import { Navbar } from './components/Navbar'
+import { useCatalogoProductos } from './components/catalogos/hooks/useCatalogoProductos'
 
 export const App = () => {
 
-  const [products, setProducts] = useState([]);
+  const { products, columnsProductos } = useCatalogoProductos({});
 
-  useEffect(() => {
-    fetch('https://inventario-prueb-default-rtdb.firebaseio.com/products.json')
-      .then(response => response.json())
-      .then(data => {
-        const productArray = [];
-        for (const key in data) {
-          productArray.push({
-            key: key,
-            ...data[key]
-          });
-        }
-        setProducts(productArray);
-      })
-      .catch(error => console.error(error));
-  }, []);
-
-  const columnsProductos = [
+  const columnsEmpleados = [
     {
-      title: 'Código de Barras',
-      dataIndex: 'codigo_de_barras',
-      key: 'codigo_de_barras'
+      title: 'Nombre(s)',
+      dataIndex: ''
     },
     {
-      title: 'Descripción',
-      dataIndex: 'descripcion',
-      key: 'descripcion'
+      title: 'A. Paterno',
     },
     {
-      title: 'Existencia en Inventario',
-      dataIndex: 'existencia_en_inventario',
-      key: 'existencia_en_inventario'
+      title: 'A. Materno',
     },
     {
-      title: 'Imagen del Producto',
-      dataIndex: 'imagen_del_producto',
-      key: 'imagen_del_producto',
-      render: (text, record) => (
-        <img src={text} alt={record.nombre} style={{maxWidth: '100px'}}/>
-      )
+      title: 'Sexo',
     },
     {
-      title: 'Nombre',
-      dataIndex: 'nombre',
-      key: 'nombre'
+      title: 'Fecha de Nacimiento',
     },
     {
-      title: 'Precio de Venta',
-      dataIndex: 'precio_de_venta',
-      key: 'precio_de_venta'
+      title: 'No. de Teléfono',
     },
     {
-      title: 'Unidad de Medida',
-      dataIndex: 'unidad_de_medida',
-      key: 'unidad_de_medida'
+      title: 'CURP',
     },
+    {
+      title: 'RFC',
+    },
+    {
+      title: 'Nombre Completo',
+    },
+    
   ];
-
 
   return (
     <>
@@ -76,10 +51,12 @@ export const App = () => {
               columns={columnsProductos}
             />}/>
             <Route path='catalogos' element={<Catalogos title={'Catalogos'}/>}/>
-            <Route path='clientes' element={<Catalogos title={'Clientes'}/>}/>
             <Route path='proveedores' element={<Catalogos title={'Proveedores'}/>}/>
             <Route path='pagos' element={<Catalogos title={'Pagos'}/>}/>
-            <Route path='empleados' element={<Catalogos title={'Empleados'}/>}/>
+            <Route path='empleados' element={<Catalogos 
+              title={'Empleados'}
+              columns={columnsEmpleados}
+            />}/>
 
             <Route path='/' element={<Navigate to='productos'/>}/>
         </Routes>
