@@ -39,9 +39,9 @@ export const useCatalogoProductos = () => {
         title: 'Imagen del Producto',
         dataIndex: 'imagen_del_producto',
         key: 'imagen_del_producto',
-        /* render: (text, record) => (
+        render: (text, record) => (
           <img src={text} alt={record.nombre} style={{maxWidth: '100px'}}/> 
-        ) */
+        )
       }, 
       {
         title: 'Nombre',
