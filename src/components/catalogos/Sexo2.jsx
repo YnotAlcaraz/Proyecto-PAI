@@ -93,7 +93,7 @@ function Sexo() {
   const formRef = React.createRef();
   const handleAddSave = () => {
     formRef.current.validateFields().then((values) => {
-      const newProduct = { ...values, key: Date.now() };
+      const newProduct = { ...values};
       fetch(`https://inventario-prueb-default-rtdb.firebaseio.com/products.json`, {
         method: 'POST',
         body: JSON.stringify(newProduct)
