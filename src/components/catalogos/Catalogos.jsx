@@ -1,7 +1,9 @@
 import { TablaCatalogo } from "./TablaCatalogo"
 
-export const Catalogos = () => {
+export const Catalogos = ({
+    title
+}) => {
   return (
-    <h1>Catalogos</h1>
+    <h1>Tipos de {title}</h1>
   )
 }
