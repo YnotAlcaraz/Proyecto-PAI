@@ -26,7 +26,7 @@ function ProductsTable() {
         <table className="table">
           <thead>
             <tr>
-              <th>Código de Barras</th>
+              <th>Sexo</th>
               <th>Descripción</th>
               <th>Existencia en Inventario</th>
               <th>Imagen del Producto</th>
