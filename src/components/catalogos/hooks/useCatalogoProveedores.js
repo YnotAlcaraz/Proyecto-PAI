@@ -1,22 +1,30 @@
 import { useEffect, useState } from "react";
 
 export const useCatalogoProveedores = () => {
-  useEffect(() => {
+  const [proveedores, setProveedores] = useState([]);
 
-  }, []);
+  useEffect(() => {}, []);
 
   const columnsProveedores = [
     {
-        title: 'Nombre',
+      title: "Nombre",
     },
     {
-        title: 'Correo Electrónico'
+      title: "Correo Electrónico",
     },
     {
-        title: 'Número de Teléfono'
+      title: "Número de Teléfono",
     },
     {
-        title: 'Dirección'
+      title: "Dirección",
+    },
+    {
+      title: "Compañía",
     },
   ];
+
+  return {
+    proveedores,
+    columnsProveedores,
+  };
 };
