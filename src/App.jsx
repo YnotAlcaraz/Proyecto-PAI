@@ -13,9 +13,7 @@ export const App = () => {
         <Routes>
 
             <Route path='productos' element={<CatalogoProductos/>}/>
-            {/* <Route path='proveedores' element={<CatalogoProveedores/>}/> */}
             <Route path='proveedores' element={<CatalogoProveedores/>}/>
-            {/* 
             <Route path='pagos' element={<CatalogoPagos/>}/>
             <Route path='empleados' element={<CatalogoEmpleados/>}/>
             {/* <Route path='unidades' element={<CatalogoUnidades/>}/> */}
