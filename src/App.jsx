@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Catalogos } from './components/catalogos/Catalogos'
 import { Navbar } from './components/Navbar'
-import Sexo from './components/Sexo'
 
 export const App = () => {
 
