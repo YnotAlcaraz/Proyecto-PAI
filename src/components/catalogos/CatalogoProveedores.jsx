@@ -197,7 +197,7 @@ export const CatalogoProveedores = () => {
   ];
   return (
     <>
-      <h1>Catálogo de Productos</h1>
+      <h1>Catálogo de Proveedores</h1>
       <Button type="primary" onClick={() => setVisibleAdd(true)}>
         Agregar Producto
       </Button>
