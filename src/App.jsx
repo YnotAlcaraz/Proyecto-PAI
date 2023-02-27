@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Catalogos } from './components/catalogos/Catalogos'
+import Sexo2 from './components/catalogos/Sexo2'
 import { Navbar } from './components/Navbar'
 import { useCatalogoProductos } from './components/catalogos/hooks/useCatalogoProductos'
 import { useCatalogoEmpleados } from './components/catalogos/hooks/useCatalogoEmpleados'
@@ -49,6 +50,7 @@ export const App = () => {
 
             <Route path='/' element={<Navigate to='productos'/>}/>
         </Routes>
+        <Sexo2/>
     </>
   )
 }
