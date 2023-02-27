@@ -9,7 +9,7 @@ export const App = () => {
     <>
         <Navbar/>
         <Routes>
-            <Route path='productos' element={<Catalogos title={'Productos'}/>}/>
+            <Route path='productos' element={<ProductsTable/>}/>
             <Route path='clientes' element={<Catalogos title={'Clientes'}/>}/>
             <Route path='proveedores' element={<Catalogos title={'Proveedores'}/>}/>
             <Route path='pagos' element={<Catalogos title={'Pagos'}/>}/>
@@ -17,7 +17,7 @@ export const App = () => {
 
             <Route path='/' element={<Navigate to='productos'/>}/>
         </Routes>
-        <ProductsTable/>
+        
     </>
   )
 }
