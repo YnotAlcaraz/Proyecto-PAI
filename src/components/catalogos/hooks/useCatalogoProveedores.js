@@ -10,10 +10,13 @@ export const useCatalogoProveedores = () => {
         title: 'Nombre',
     },
     {
-        title: 'Correo Programación'
+        title: 'Correo Electrónico'
     },
     {
-        
+        title: 'Número de Teléfono'
+    },
+    {
+        title: 'Dirección'
     },
   ];
 };
