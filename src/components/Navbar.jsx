@@ -39,12 +39,7 @@ export const Navbar = () => {
                     >
                         Empleados
                     </NavLink>
-                    <NavLink 
-                        className="nav-item nav-link" 
-                        to="/unidades"
-                    >
-                        Unidades de Medida
-                    </NavLink>
+                    
                 </div>
             </div>
         </nav>
