@@ -7,11 +7,11 @@ export const Catalogos = ({
     }) => {
         const [productos, setProductos] = useState([]);
         useEffect(() => {
-            getProductos();
+            const _productos = getProductos();
+            setProductos(_productos);
         }, []);
         
-        setProductos(_productos);
-        
+        console.log(productos);
 
 
 
