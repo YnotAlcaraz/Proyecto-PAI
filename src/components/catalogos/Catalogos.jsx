@@ -1,8 +1,22 @@
 import { Table } from "antd"
+import { useEffect, useState } from "react";
+import { getProductos } from "./hooks/getProductos";
 
 export const Catalogos = ({
         title
     }) => {
+        const [productos, setProductos] = useState([]);
+        useEffect(() => {
+            getProductos();
+        }, []);
+        
+        setProductos(_productos);
+        
+
+
+
+
+        
 
         const dataSource = [
             {
