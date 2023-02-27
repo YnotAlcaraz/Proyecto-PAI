@@ -8,7 +8,7 @@ export const Navbar = () => {
                 className="navbar-brand" 
                 to="/"
             >
-                Asociaciones
+                Catálogos
             </Link>
 
             <div className="navbar-collapse">
@@ -16,23 +16,35 @@ export const Navbar = () => {
 
                     <NavLink 
                         className="nav-item nav-link" 
-                        to="#"
+                        to="/productos"
                     >
-                        Marvel
+                        Productos
                     </NavLink>
 
                     <NavLink 
                         className="nav-item nav-link" 
-                        to="#"
+                        to="/clientes"
                     >
-                        DC
+                        Clientes
                     </NavLink>
 
                     <NavLink 
                         className="nav-item nav-link" 
-                        to="#"
+                        to="/proveedores"
                     >
-                        Search
+                        Proveedores
+                    </NavLink>
+                    <NavLink 
+                        className="nav-item nav-link" 
+                        to="/pagos"
+                    >
+                        Pagos
+                    </NavLink>
+                    <NavLink 
+                        className="nav-item nav-link" 
+                        to="/empleados"
+                    >
+                        Empleados
                     </NavLink>
                 </div>
             </div>

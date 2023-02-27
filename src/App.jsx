@@ -9,10 +9,12 @@ export const App = () => {
         <Navbar/>
         <Routes>
             <Route path='productos' element={<Catalogos title={'Productos'}/>}/>
-            <Route path='productos' element={<Catalogos title={'Cliente'}/>}/>
-            <Route path='productos' element={<Catalogos title={'Proveedor'}/>}/>
-            <Route path='productos' element={<Catalogos title={'Pago'}/>}/>
-            <Route path='productos' element={<Catalogos title={'Empleado'}/>}/>
+            <Route path='clientes' element={<Catalogos title={'Clientes'}/>}/>
+            <Route path='proveedores' element={<Catalogos title={'Proveedores'}/>}/>
+            <Route path='pagos' element={<Catalogos title={'Pagos'}/>}/>
+            <Route path='empleados' element={<Catalogos title={'Empleados'}/>}/>
+
+            <Route path='/' element={<Navigate to='productos'/>}/>
         </Routes>
     </>
   )
