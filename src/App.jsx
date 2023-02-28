@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import ApiTable from './components/ApiTable'
 import { CatalogoEmpleados } from './components/catalogos/CatalogoEmpleados'
 import { CatalogoPagos } from './components/catalogos/CatalogoPagos'
 import { CatalogoProductos } from './components/catalogos/CatalogoProductos'
@@ -21,7 +22,7 @@ export const App = () => {
 
             <Route path='/' element={<Navigate to='productos'/>}/>
         </Routes>
-
+        <ApiTable/>
     </>
   )
 }
