@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Popconfirm } from 'antd';
+import React, { useState, useEffect } from "react";
+import { Table, Button, Popconfirm } from "antd";
 
 function ApiTable() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('https://inventario-prueb-default-rtdb.firebaseio.com/products.json')
-      .then(response => response.json())
-      .then(data => {
+    fetch("https://inventario-prueb-default-rtdb.firebaseio.com/products.json")
+      .then((response) => response.json())
+      .then((data) => {
         // Convierte los datos del objeto en un array de objetos
-        const dataArray = Object.keys(data).map(key => {
+        const dataArray = Object.keys(data).map((key) => {
           return { key, ...data[key] };
         });
         setData(dataArray);
@@ -24,19 +24,24 @@ function ApiTable() {
     // Lógica para eliminar el registro
   };
 
-  const columns = data.length > 0 ? Object.keys(data[0]).map((key) => ({
-    title: key,
-    dataIndex: key,
-    key,
-    render: (text) => {
-      if (typeof text === "string" && text.match(/^(https?:\/\/|data:image\/[a-z]+;base64,)/)) {
-        return <img src={text} width="100px" alt="imagen" />;
-      } else {
-        return text;
-      }
-    }
-    ,
-  })) : [];
+  const columns =
+    data.length > 0
+      ? Object.keys(data[0]).map((key) => ({
+          title: key,
+          dataIndex: key,
+          key,
+          render: (text) => {
+            if (
+              typeof text === "string" &&
+              text.match(/^(https?:\/\/|data:image\/[a-z]+;base64,)/)
+            ) {
+              return <img src={text} width="100px" alt="imagen" />;
+            } else {
+              return text;
+            }
+          },
+        }))
+      : [];
 
   columns.push({
     title: "Acciones",
@@ -66,7 +71,9 @@ function ApiTable() {
   });
 
   return (
-    <Table dataSource={data} columns={columns} />
+    <>
+      <Table dataSource={data} columns={columns} />
+    </>
   );
 }
 

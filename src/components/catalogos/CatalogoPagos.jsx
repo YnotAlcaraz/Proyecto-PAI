@@ -108,13 +108,10 @@ export const CatalogoPagos = () => {
   const handleAddSave = () => {
     formRef.current.validateFields().then((values) => {
       const newProduct = { ...values };
-      fetch(
-        `https://inventario-prueb-default-rtdb.firebaseio.com/pagos.json`,
-        {
-          method: "POST",
-          body: JSON.stringify(newProduct),
-        }
-      )
+      fetch(`https://inventario-prueb-default-rtdb.firebaseio.com/pagos.json`, {
+        method: "POST",
+        body: JSON.stringify(newProduct),
+      })
         .then((response) => {
           if (response.ok) {
             setPagos([...pagos, newProduct]);
@@ -128,36 +125,36 @@ export const CatalogoPagos = () => {
 
   const columns = [
     {
-        title: 'Método de pago',
-        dataIndex: 'descripcion',
-        key: 'descripcion'
+      title: "Método de pago",
+      dataIndex: "descripcion",
+      key: "descripcion",
     },
     {
-        title: "Acciones",
-        dataIndex: "key",
-        key: "acciones",
-        render: (key, record) => (
-          <>
-            <Button
-              type="primary"
-              style={{ marginRight: 16 }}
-              onClick={() => handleEdit(key)}
-            >
-              Editar
+      title: "Acciones",
+      dataIndex: "key",
+      key: "acciones",
+      render: (key, record) => (
+        <>
+          <Button
+            type="primary"
+            style={{ marginRight: 16 }}
+            onClick={() => handleEdit(key)}
+          >
+            Editar
+          </Button>
+          <Popconfirm
+            title="¿Estás seguro de que quieres eliminar este producto?"
+            onConfirm={() => handleDelete(key)}
+            okText="Sí"
+            cancelText="No"
+          >
+            <Button type="danger" style={{ marginRight: 16 }}>
+              Eliminar
             </Button>
-            <Popconfirm
-              title="¿Estás seguro de que quieres eliminar este producto?"
-              onConfirm={() => handleDelete(key)}
-              okText="Sí"
-              cancelText="No"
-            >
-              <Button type="danger" style={{ marginRight: 16 }}>
-                Eliminar
-              </Button>
-            </Popconfirm>
-          </>
-        ),
-      },
+          </Popconfirm>
+        </>
+      ),
+    },
   ];
 
   return (

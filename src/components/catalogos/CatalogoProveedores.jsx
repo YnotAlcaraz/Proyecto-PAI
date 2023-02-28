@@ -16,9 +16,10 @@ export const CatalogoProveedores = () => {
   const [visible, setVisible] = useState(false); //Editar
   const [visibleAdd, setVisibleAdd] = useState(false); //Añadir
 
-
   useEffect(() => {
-    fetch("https://inventario-prueb-default-rtdb.firebaseio.com/proovedores.json")
+    fetch(
+      "https://inventario-prueb-default-rtdb.firebaseio.com/proovedores.json"
+    )
       .then((response) => response.json())
       .then((data) => {
         const provedoresArray = [];
@@ -33,7 +34,6 @@ export const CatalogoProveedores = () => {
       .catch((error) => console.error(error));
   }, []);
 
-
   const handleDelete = (key) => {
     fetch(
       `https://inventario-prueb-default-rtdb.firebaseio.com/proovedores/${key}.json`,
@@ -43,12 +43,13 @@ export const CatalogoProveedores = () => {
     )
       .then((response) => {
         if (response.ok) {
-          setProveedores(proveedores.filter((proveedores) => proveedores.key !== key));
+          setProveedores(
+            proveedores.filter((proveedores) => proveedores.key !== key)
+          );
         }
       })
       .catch((error) => console.error(error));
   };
-
 
   const fetchPreviousProductData = (key) => {
     fetch(
@@ -130,7 +131,6 @@ export const CatalogoProveedores = () => {
   };
 
   const columns = [
-   
     {
       title: "Email",
       dataIndex: "email",
@@ -157,15 +157,15 @@ export const CatalogoProveedores = () => {
       key: "nombre",
     },
     {
-        title: "Nombre Empresa",
-        dataIndex: "nombre_empresa",
-        key: "nombre_empresa",
-      },
-      {
-        title: "Telefono",
-        dataIndex: "telefono",
-        key: "telefono",
-      },
+      title: "Nombre Empresa",
+      dataIndex: "nombre_empresa",
+      key: "nombre_empresa",
+    },
+    {
+      title: "Telefono",
+      dataIndex: "telefono",
+      key: "telefono",
+    },
     {
       title: "Acciones",
       dataIndex: "key",
@@ -180,7 +180,6 @@ export const CatalogoProveedores = () => {
             Editar
           </Button>
 
-          
           <Popconfirm
             title="¿Estás seguro de que quieres eliminar este producto?"
             onConfirm={() => handleDelete(key)}
@@ -222,13 +221,13 @@ export const CatalogoProveedores = () => {
           </Button>,
         ]}
       >
-<Form
+        <Form
           layout="vertical"
           ref={formRef}
-          initialValues={proveedores.find((proveedores) => proveedores.key === editingKey)}
+          initialValues={proveedores.find(
+            (proveedores) => proveedores.key === editingKey
+          )}
         >
-
-
           <Form.Item
             name="email"
             label="Email"
@@ -239,12 +238,9 @@ export const CatalogoProveedores = () => {
               },
             ]}
           >
-            <Input/>
+            <Input />
           </Form.Item>
 
-          
-          
-          
           <Form.Item
             name="direccion"
             label="Direccion"
@@ -258,10 +254,6 @@ export const CatalogoProveedores = () => {
             <Input />
           </Form.Item>
 
-
-          
-          
-          
           <Form.Item
             name="direccion_facturacion"
             label="Direccion de facturacion"
@@ -272,11 +264,9 @@ export const CatalogoProveedores = () => {
               },
             ]}
           >
-            <Input/>
+            <Input />
           </Form.Item>
-          
-          
-          
+
           <Form.Item
             name="forma_pago"
             label="Forma pago"
@@ -289,21 +279,15 @@ export const CatalogoProveedores = () => {
           >
             <Input />
           </Form.Item>
-          
-          
-          
+
           <Form.Item
             name="nombre"
             label="Nombre"
-            rules={[
-              { required: true, message: "Ingresa el nombre del Dueño" },
-            ]}
+            rules={[{ required: true, message: "Ingresa el nombre del Dueño" }]}
           >
             <Input />
           </Form.Item>
-          
-          
-          
+
           <Form.Item
             name="nombre_empresa"
             label="Nombre Empresa"
@@ -314,11 +298,9 @@ export const CatalogoProveedores = () => {
               },
             ]}
           >
-            <Input/>
+            <Input />
           </Form.Item>
-          
-          
-          
+
           <Form.Item
             name="telefono"
             label="Telefono"
@@ -331,13 +313,8 @@ export const CatalogoProveedores = () => {
           >
             <Input />
           </Form.Item>
-
-
         </Form>
       </Modal>
-
-
-
 
       <Modal
         title="Editar Producto"
@@ -356,16 +333,13 @@ export const CatalogoProveedores = () => {
           </Button>,
         ]}
       >
-
-
-
         <Form
           layout="vertical"
           ref={formRef}
-          initialValues={proveedores.find((proveedores) => proveedores.key === editingKey)}
+          initialValues={proveedores.find(
+            (proveedores) => proveedores.key === editingKey
+          )}
         >
-
-
           <Form.Item
             name="email"
             label="Email"
@@ -376,12 +350,9 @@ export const CatalogoProveedores = () => {
               },
             ]}
           >
-            <Input/>
+            <Input />
           </Form.Item>
 
-          
-          
-          
           <Form.Item
             name="direccion"
             label="Direccion"
@@ -395,10 +366,6 @@ export const CatalogoProveedores = () => {
             <Input />
           </Form.Item>
 
-
-          
-          
-          
           <Form.Item
             name="direccion_facturacion"
             label="Direccion de facturacion"
@@ -409,11 +376,9 @@ export const CatalogoProveedores = () => {
               },
             ]}
           >
-            <Input/>
+            <Input />
           </Form.Item>
-          
-          
-          
+
           <Form.Item
             name="forma_pago"
             label="Forma pago"
@@ -426,21 +391,15 @@ export const CatalogoProveedores = () => {
           >
             <Input />
           </Form.Item>
-          
-          
-          
+
           <Form.Item
             name="nombre"
             label="Nombre"
-            rules={[
-              { required: true, message: "Ingresa el nombre del Dueño" },
-            ]}
+            rules={[{ required: true, message: "Ingresa el nombre del Dueño" }]}
           >
             <Input />
           </Form.Item>
-          
-          
-          
+
           <Form.Item
             name="nombre_empresa"
             label="Nombre Empresa"
@@ -451,11 +410,9 @@ export const CatalogoProveedores = () => {
               },
             ]}
           >
-            <Input/>
+            <Input />
           </Form.Item>
-          
-          
-          
+
           <Form.Item
             name="telefono"
             label="Telefono"
@@ -468,8 +425,6 @@ export const CatalogoProveedores = () => {
           >
             <Input />
           </Form.Item>
-
-
         </Form>
       </Modal>
     </>

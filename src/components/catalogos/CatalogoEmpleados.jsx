@@ -128,49 +128,49 @@ export const CatalogoEmpleados = () => {
 
   const columns = [
     {
-        title: 'Nombre(s)',
-        dataIndex: 'nombre',
-        key: 'nombre',
+      title: "Nombre(s)",
+      dataIndex: "nombre",
+      key: "nombre",
     },
     {
-        title: 'A. Paterno',
-        dataIndex: 'apellido_paterno',
-        key: 'apellido_paterno',
+      title: "A. Paterno",
+      dataIndex: "apellido_paterno",
+      key: "apellido_paterno",
     },
     {
-        title: 'A. Materno',
-        dataIndex: 'apellido_materno',
-        key: 'apellido_materno',
+      title: "A. Materno",
+      dataIndex: "apellido_materno",
+      key: "apellido_materno",
     },
     {
-        title: 'Sexo',
-        dataIndex: 'sexo',
-        key: 'sexo',
+      title: "Sexo",
+      dataIndex: "sexo",
+      key: "sexo",
     },
     {
-        title: 'Fecha de Nacimiento',
-        dataIndex: 'fecha_nac',
-        key: 'fecha_nac',
+      title: "Fecha de Nacimiento",
+      dataIndex: "fecha_nac",
+      key: "fecha_nac",
     },
     {
-        title: 'No. de Teléfono',
-        dataIndex: 'no_tel',
-        key: 'no_tel',
+      title: "No. de Teléfono",
+      dataIndex: "no_tel",
+      key: "no_tel",
     },
     {
-        title: 'CURP',
-        dataIndex: 'curp',
-        key: 'curp',
+      title: "CURP",
+      dataIndex: "curp",
+      key: "curp",
     },
     {
-        title: 'RFC',
-        dataIndex: 'rfc',
-        key: 'rfc',
+      title: "RFC",
+      dataIndex: "rfc",
+      key: "rfc",
     },
     {
-        title: 'Fecha de Inicio',
-        dataIndex: 'fecha_ini',
-        key: 'fecha_ini',
+      title: "Fecha de Inicio",
+      dataIndex: "fecha_ini",
+      key: "fecha_ini",
     },
     {
       title: "Acciones",
@@ -279,8 +279,10 @@ export const CatalogoEmpleados = () => {
             name="fecha_nac"
             label="Fecha de Nacimiento"
             rules={[
-              { required: true,
-                message: "Ingresa la Fecha de Nacimiento del Empleado" },
+              {
+                required: true,
+                message: "Ingresa la Fecha de Nacimiento del Empleado",
+              },
             ]}
           >
             <Input />
@@ -313,10 +315,10 @@ export const CatalogoEmpleados = () => {
             name="rfc"
             label="RFC"
             rules={[
-                {
-                    required: true,
-                    message: "Ingresa el RFC del Empleado",
-                }
+              {
+                required: true,
+                message: "Ingresa el RFC del Empleado",
+              },
             ]}
           >
             <Input />
@@ -325,10 +327,10 @@ export const CatalogoEmpleados = () => {
             name="fecha_ini"
             label="Fecha de Inicio"
             rules={[
-                {
-                    required: true,
-                    message: "Ingresa la Fecha de Inicio del Empleado"
-                }
+              {
+                required: true,
+                message: "Ingresa la Fecha de Inicio del Empleado",
+              },
             ]}
           >
             <Input />
@@ -356,7 +358,9 @@ export const CatalogoEmpleados = () => {
         <Form
           layout="vertical"
           ref={formRef}
-          initialValues={empleados.find((product) => product.key === editingKey)}
+          initialValues={empleados.find(
+            (product) => product.key === editingKey
+          )}
         >
           <Form.Item
             name="nombre"
@@ -410,8 +414,10 @@ export const CatalogoEmpleados = () => {
             name="fecha_nac"
             label="Fecha de Nacimiento"
             rules={[
-              { required: true,
-                message: "Ingresa la Fecha de Nacimiento del Empleado" },
+              {
+                required: true,
+                message: "Ingresa la Fecha de Nacimiento del Empleado",
+              },
             ]}
           >
             <Input />
@@ -444,10 +450,10 @@ export const CatalogoEmpleados = () => {
             name="rfc"
             label="RFC"
             rules={[
-                {
-                    required: true,
-                    message: "Ingresa el RFC del Empleado",
-                }
+              {
+                required: true,
+                message: "Ingresa el RFC del Empleado",
+              },
             ]}
           >
             <Input />
@@ -456,10 +462,10 @@ export const CatalogoEmpleados = () => {
             name="fecha_ini"
             label="Fecha de Inicio"
             rules={[
-                {
-                    required: true,
-                    message: "Ingresa la Fecha de Inicio del Empleado"
-                }
+              {
+                required: true,
+                message: "Ingresa la Fecha de Inicio del Empleado",
+              },
             ]}
           >
             <Input />

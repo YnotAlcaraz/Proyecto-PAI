@@ -1,5 +1,5 @@
-import { Link, NavLink } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { Link, NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export const Navbar = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -11,19 +11,19 @@ export const Navbar = () => {
 
   const formatTime = (date) => {
     const options = {
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
       hour12: true,
     };
-    return date.toLocaleString('en-US', options);
+    return date.toLocaleString("en-US", options);
   };
 
   return (
     <nav className="navbar navbar-expand-sm navbar-dark bg-dark p-2">
-  
-        <Link className="navbar-brand" to="/">Instituto Tecnologico de Mexicali - {formatTime(currentTime)}</Link>
-
+      <Link className="navbar-brand" to="/">
+        Instituto Tecnologico de Mexicali - {formatTime(currentTime)}
+      </Link>
 
       <div className="navbar-collapse">
         <div className="navbar-nav ml-auto">
