@@ -136,7 +136,7 @@ export const Productos = () => {
       <h1>Catálogo De Productos</h1>
       <hr />
       <Button type="primary" onClick={() => setVisible(true)} style={{marginBottom: 20}}>
-        Agregar Empleado
+        Agregar Producto
       </Button>
       <Table 
         dataSource={ productos }
