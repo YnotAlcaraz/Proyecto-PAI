@@ -9,3 +9,6 @@ Proyecto de Administración de Inventario
 
 **Correr proyecto**
 >yarn dev
+
+# API
+https://github.com/YnotAlcaraz/PAI-API
