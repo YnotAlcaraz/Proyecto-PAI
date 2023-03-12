@@ -6,114 +6,54 @@ import {
   Modal,
   Form,
   Input,
-  InputNumber
+  DatePicker,
+  Select,
+  Col
 } from "antd";
+import axios, { Axios } from "axios";
 
 export const Empleados = () => {
+  const url = 'http://localhost:3000/empleados';
   const [empleados, setEmpleados] = useState([]);
-  const [editingKey, setEditingKey] = useState("");
-  const [previousProductData, setPreviousProductData] = useState({});
   const [visible, setVisible] = useState(false);
-  const [visibleAdd, setVisibleAdd] = useState(false)
+  const [apellidoMaterno, setApellidoMaterno] = useState();
+  const [apellidoPaterno, setApellidoPaterno] = useState();
+  const [curp, setCurp] = useState();
+  const [fechaIni, setFechaIni] = useState();
+  const [fechaNac, setFechaNac] = useState();
+  const [iden, setIden] = useState();
+  const [noTel, setNoTel] = useState();
+  const [nombres, setNombres] = useState();
+  const [rfc, setRfc] = useState();
+  const [sexo, setSexo] = useState();
+
 
   useEffect(() => {
-    fetch('http://localhost:3000/empleados')
-    .then(response => response.json())
-    .then(data => {
-      setEmpleados(data);
-    })
-    .catch(error => console.error(error));
-  }, []);
+    axios.get(url)
+    .then(res => {
+      setEmpleados(res.data);
+    }).catch(err => console.log(err));
+  }, [visible]);
 
-  const handleDelete = (id) => {
-    fetch(`http://localhost:3000/empleados?id=${id}`,
-        {
-          method: "DELETE",
-        }
-    ).then((response  => {
-      if (response.ok) {
-        setEmpleados(empleados.filter((e) => e.id != id));
-      }
-    }))
-    .catch(error => console.error(error));
-  }
-
-  const fetchPreviousProductData = (id) => {
-    fetch(`http://localhost:3000/empleados?id=${id}`)
-    .then(response => response.json())
-    .then(data => { setPreviousProductData(data) })
-    .catch(error => console.error(error));
-  }
-
-  const handleEdit = (id) => {
-    setEditingKey(id);
-    setVisible(true);
-    fetchPreviousProductData(id);
-  }
-
-  const handleCancel = () => {
-    setEditingKey("");
+  const onFinish = () => {
+    axios.post(url, { apellido_materno: apellidoMaterno, apellido_paterno: apellidoPaterno, curp: curp, 
+      fecha_ini: fechaIni, fecha_nac: fechaNac, id: iden, no_tel: noTel, nombre: nombres, rfc: rfc, sexo:sexo
+    }).then(res => console.log(`Posting ${res}`)).catch(err => console.error(err));
     setVisible(false);
   }
 
-  const handleCancelAdd = () => {
-    setEditingKey("");
-    setVisibleAdd(false);
+  const onCancel = () => {
+    setVisible(false);
   }
 
-  const handleSave = (key) => {
-    const updatedProduct = formRef.current.getFieldsValue();
-    fetch(`http://localhost:3000/empleados?id=${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedProduct),
-      }
-    )
-      .then((response) => {
-        if (response.ok) {
-          const updatedempleados = empleados.map((product) => {
-            if (product.key === key) {
-              return {
-                ...product,
-                ...updatedProduct,
-              };
-            }
-            return product;
-          });
-          setEmpleados(updatedempleados);
-          setEditingKey("");
-          setVisible(false);
-        }
-      })
-      .catch((error) => console.error(error));
-  };
-
-  const formRef = React.createRef();
-  const handleAddSave = () => {
-    formRef.current.validateFields().then((values) => {
-      const newProduct = { ...values };
-      fetch(
-        `http://localhost:3000/empleados`,
-        {
-          method: "POST",
-          body: JSON.stringify(newProduct),
-        }
-      )
-        .then((response) => {
-          if (response.ok) {
-            setEmpleados([...empleados, newProduct]);
-
-            setVisibleAdd(false);
-          }
-        })
-        .catch((error) => console.error(error));
-    });
-  };
 
   const columns = [
+    {
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+      width: "id"
+    },
     {
       title: "Nombre(s)",
       dataIndex: "nombre",
@@ -166,8 +106,7 @@ export const Empleados = () => {
       title: "Acciones",
       dataIndex: "key",
       key: "acciones",
-      width: 200,
-      render: (key, record) => {
+      render: (key, record) => (
         <>
           <Button
             type="primary"
@@ -177,7 +116,7 @@ export const Empleados = () => {
             Editar
           </Button>
           <Popconfirm
-            title="¿Estás seguro de que quieres eliminar este Empleado?"
+            title="¿Deseas Eliminar Este Empleado?"
             onConfirm={() => handleDelete(key)}
             okText="Sí"
             cancelText="No"
@@ -187,14 +126,25 @@ export const Empleados = () => {
             </Button>
           </Popconfirm>
         </>
-      }
+      )
     }
   ];
+
+  const rules = [
+    {
+      required: [
+        {
+          required: true,
+          message: "Este Campo es Requerido"
+        }
+      ]
+    }
+  ]
 
   return (
     <>
       <h1>Catálogo de Empleados</h1>
-      <Button type="primary" onClick={() => setVisibleAdd(true)}>
+      <Button type="primary" onClick={() => setVisible(true)}>
         Agregar Empleado
       </Button>
       <Table 
@@ -204,263 +154,100 @@ export const Empleados = () => {
         rowKey="key"
       />
 
-<Modal
+    <Modal
         title="Agregar Empleado"
-        visible={visibleAdd}
-        onCancel={handleCancelAdd}
+        open={visible}
+        onCancel={onCancel}
+        width={'75%'}
         footer={[
-          <Button key="cancel" onClick={handleCancelAdd}>
+          <Button key="cancel" onClick={onCancel}>
             Cancelar
           </Button>,
-          <Button key="save" type="primary" onClick={handleAddSave}>
+          <Button key="save" type="submit" onClick={() => onFinish()}>
             Guardar
           </Button>,
         ]}
       >
-        <Form layout="vertical" ref={formRef}>
-          <Form.Item
-            name="nombre"
-            label="Nombre(s)"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el Nombre del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="apellido_paterno"
-            label="Apellido Paterno"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el Apellido Paterno del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="apellido_materno"
-            label="Apellido Materno"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el Apellido Materno del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="sexo"
-            label="Sexo"
-            rules={[
-              {
-                required: true,
-                message: "Sexo del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="fecha_nac"
-            label="Fecha de Nacimiento"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa la Fecha de Nacimiento del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="no_tel"
-            label="Número de Teléfono"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el Número de Teléfono del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="curp"
-            label="CURP"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el CURP del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="rfc"
-            label="RFC"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el RFC del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="fecha_ini"
-            label="Fecha de Inicio"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa la Fecha de Inicio del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        title="Editar Empleado"
-        visible={visible}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="cancel" onClick={handleCancel}>
-            Cancelar
-          </Button>,
-          <Button
-            key="save"
-            type="primary"
-            onClick={() => handleSave(editingKey)}
-          >
-            Guardar
-          </Button>,
-        ]}
-      >
-        <Form
-          layout="vertical"
-          ref={formRef}
-          initialValues={empleados.find(
-            (product) => product.key === editingKey
-          )}
+        <Form layout="vertical"
+          onFinish={onFinish}
         >
-          <Form.Item
-            name="nombre"
-            label="Nombre(s)"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el Nombre del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="apellido_paterno"
-            label="Apellido Paterno"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el Apellido Paterno del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="apellido_materno"
-            label="Apellido Materno"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el Apellido Materno del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
+          <Col>
+            <Form.Item
+              name="id"
+              label="id"
+              rules={rules.required}
+            >
+              <Input onChange={e => setIden(e.target.value)} value={iden} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={24} md={8}>
+            <Form.Item
+              name="nombre"
+              label="Nombre(s)"
+            >
+              <Input onChange={e => setNombres(e.target.value)} value={nombres}/>
+            </Form.Item>
+            <Form.Item
+              name="apellido_paterno"
+              label="Apellido Paterno"
+            >
+              <Input onChange={e => setApellidoPaterno(e.target.value)} value={apellidoPaterno} />
+            </Form.Item>
+            <Form.Item
+              name="apellido_materno"
+              label="Apellido Materno"
+            >
+              <Input onChange={e => setApellidoMaterno(e.target.value)} value={apellidoMaterno} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={24} md={8}>
           <Form.Item
             name="sexo"
             label="Sexo"
-            rules={[
-              {
-                required: true,
-                message: "Sexo del Empleado",
-              },
-            ]}
           >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="fecha_nac"
-            label="Fecha de Nacimiento"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa la Fecha de Nacimiento del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="no_tel"
-            label="Número de Teléfono"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el Número de Teléfono del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="curp"
-            label="CURP"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el CURP del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="rfc"
-            label="RFC"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa el RFC del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="fecha_ini"
-            label="Fecha de Inicio"
-            rules={[
-              {
-                required: true,
-                message: "Ingresa la Fecha de Inicio del Empleado",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
+              <Select 
+                options={[
+                  {value: 'Femenino', label: 'Femenino'},
+                  {value: 'Masculino', label: 'Masculino'}
+                ]}
+                onChange={e => {
+                  setSexo(e)
+                }} value={sexo} 
+              />
+            </Form.Item>
+            <Form.Item
+              name="curp"
+              label="CURP"
+            >
+              <Input onChange={e => setCurp(e.target.value)} value={curp} />
+            </Form.Item>
+            <Form.Item
+              name="fecha_nac"
+              label="Fecha de Nacimiento"
+            >
+              <DatePicker onChange={e => setFechaNac(e.format('DD/MM/YYYY'))} value={fechaNac} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={24} md={8}>
+            <Form.Item
+              name="rfc"
+              label="RFC"
+            >
+              <Input onChange={e => setRfc(e.target.value)} value={rfc} />
+            </Form.Item>
+            <Form.Item
+              name="no_tel"
+              label="Número de Teléfono"
+            >
+              <Input onChange={e => setNoTel(e.target.value)} value={noTel} />
+            </Form.Item>
+            <Form.Item
+              name="fecha_ini"
+              label="Fecha de Inicio"
+            >
+              <DatePicker onChange={e => setFechaIni(e.format('DD/MM/YYYY'))} value={fechaIni} />
+            </Form.Item>
+          </Col>
         </Form>
       </Modal>
     </>
