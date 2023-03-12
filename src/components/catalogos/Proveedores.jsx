@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import useTable from "../customHook/useTable";
 import {
   Table,
   Button,
@@ -125,95 +126,13 @@ export const Proveedores = () => {
 
   return (
     <>
-      <h1>Catálogo De Proveedores</h1>
+      <h1>Catálogo De Productos</h1>
       <hr />
-      <Button type="primary" onClick={() => setVisible(true)} style={{marginBottom: 20}}>
-        Agregar Proveedor
+      <Button type="primary" style={{ marginBottom: 20 }}>
+        Agregar Producto
       </Button>
-      <Table 
-        dataSource={ proveedores }
-        columns={ columns }
-        pagination={{ pageSize: 5 }}
-        rowKey="key"
-      />
-      <Modal
-        title={`${isEdit ? 'Editar' : 'Agregar'} Proveedor`}
-        open={ visible }
-        onCancel={ onCancel }
-        width={'70%'}
-        footer={[
-          <Button key="cancel" onClick={ onCancel }>
-            Cancelar
-          </Button>,
-          <Button key="save" type="primary" onClick={() => onFinish()}>
-            Guardar
-          </Button>,
-        ]}
-      >
-        <Form
-          layout="vertical"
-          onFinish={ onFinish }
-        >
-          <Row gutter={10}>
-            <Col xs={24} sm={24} md={16}>
-              <Form.Item
-                name="id"
-                label="Id"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
-              >
-                <Input onChange={e => setIden(e.target.value)} value={iden} />
-              </Form.Item>
-              <Form.Item
-                name="nombre"
-                label="Nombre"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
-              >
-                <Input onChange={e => setNomb(e.target.value)} value={nomb} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={10}>
-            <Col xs={24} sm={24} md={16}>
-              <Form.Item
-                name="correo"
-                label="Correo"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requierido"
-                }]}
-              >
-                <Input onChange={e => setCorr(e.target.value)} value={corr} />
-              </Form.Item>
-              <Form.Item
-                name="telefono"
-                label="No. de Telefono"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
-              >
-                <Input onChange={e => setTel(e.target.value)} value={tel} />
-              </Form.Item>
-              <Form.Item
-                name="direccion"
-                label="Direccion"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Obligatorio"
-                }]}
-              >
-                <Input onChange={e => setDir(e.target.value)} value={dir}/>
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
+
+      {useTable("http://localhost:3000/proveedores")}
     </>
-  )
-}
+  );
+};
