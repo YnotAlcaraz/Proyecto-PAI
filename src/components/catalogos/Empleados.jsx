@@ -11,7 +11,7 @@ import {
   Col,
   Row
 } from "antd";
-import axios, { Axios } from "axios";
+import axios from "axios";
 
 export const Empleados = () => {
   const url = 'http://localhost:3000/empleados';
@@ -36,13 +36,13 @@ export const Empleados = () => {
     axios.get(url)
     .then(res => {
       setEmpleados(res.data);
-    }).catch(err => console.log(err));
+    }).catch(err => console.error(err));
   }, [isLoading]);
 
   const onFinish = () => {
     if (fechaIni) {
       //POST
-      if(!isEdit) {
+      if (!isEdit) {
         setIsLoading(true);
         axios.post(url, { apellido_materno: apellidoMaterno, apellido_paterno: apellidoPaterno, curp: curp, 
           fecha_ini: fechaIni, fecha_nac: fechaNac, id: iden, no_tel: noTel, nombre: nombres, rfc: rfc, sexo:sexo
@@ -90,7 +90,7 @@ export const Empleados = () => {
       title: "Id",
       dataIndex: "id",
       key: "id",
-      width: "id"
+      width: 100
     },
     {
       title: "Nombre(s)",
@@ -155,7 +155,7 @@ export const Empleados = () => {
             Editar
           </Button>
           <Popconfirm
-            title="¿Estás seguro de que quieres eliminar este Empleado?"
+            title="¿Deseas Eliminar Este Empleado?"
             onConfirm={() => onDelete(key)}
             okText="Sí"
             cancelText="No"
@@ -179,33 +179,33 @@ export const Empleados = () => {
       <Table 
         dataSource={ empleados }
         columns={ columns }
-        pagination={{ pageSize:5 }}
+        pagination={{ pageSize: 5 }}
         rowKey="key"
       />
 
     <Modal
-        title={`${isEdit? 'Editar' : 'Agregar'} Empleado`}
-        open={visible}
-        onCancel={onCancel}
+        title={`${isEdit ? 'Editar' : 'Agregar'} Empleado`}
+        open={ visible }
+        onCancel={ onCancel }
         width={'80%'}
         footer={[
-          <Button key="cancel" onClick={onCancel}>
+          <Button key="cancel" onClick={ onCancel }>
             Cancelar
           </Button>,
-          <Button key="save" type="submit" onClick={() => onFinish()}>
+          <Button key="save" type="primary" onClick={() => onFinish()}>
             Guardar
           </Button>,
         ]}
       >
         <Form
           layout="vertical"
-          onFinish={onFinish}
+          onFinish={ onFinish }
         >
           <Row gutter={10}>
             <Col xs={24} sm={24} md={2}>
               <Form.Item
                 name="id"
-                label="id"
+                label="Id"
                 rules={[{
                     required: true,
                     message: "Este Campo Es Requerido"
@@ -286,7 +286,7 @@ export const Empleados = () => {
               <Form.Item
                 name="fecha_nac"
                 label="Fecha de Nacimiento"
-                md={8}
+
                 rules={[{
                   required: true,
                   message: "Este Campo Es Requerido"
