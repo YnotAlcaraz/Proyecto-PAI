@@ -22,7 +22,7 @@ const useTable = (url) => {
           },
         }));
 
-        // Reorder columns to have 'id' at the beginning
+        // reordenar columnas para que id sea la primera columna
         const idColumnIndex = columns.findIndex(
           (column) => column.dataIndex === "id"
         );
