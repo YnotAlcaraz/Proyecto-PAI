@@ -15,7 +15,10 @@ import axios, { Axios } from "axios";
 
 export const Empleados = () => {
   const url = 'http://localhost:3000/empleados';
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [empleados, setEmpleados] = useState([]);
+  const [empleado, setEmpleado] = useState({});
   const [visible, setVisible] = useState(false);
   const [apellidoMaterno, setApellidoMaterno] = useState();
   const [apellidoPaterno, setApellidoPaterno] = useState();
@@ -34,28 +37,51 @@ export const Empleados = () => {
     .then(res => {
       setEmpleados(res.data);
     }).catch(err => console.log(err));
-  }, [visible]);
+  }, [isLoading]);
 
   const onFinish = () => {
     if (fechaIni) {
-      axios.post(url, { apellido_materno: apellidoMaterno, apellido_paterno: apellidoPaterno, curp: curp, 
-        fecha_ini: fechaIni, fecha_nac: fechaNac, id: iden, no_tel: noTel, nombre: nombres, rfc: rfc, sexo:sexo
-      }).then(res => setVisible(false)).catch(err => console.error(err));
+      //POST
+      if(!isEdit) {
+        setIsLoading(true);
+        axios.post(url, { apellido_materno: apellidoMaterno, apellido_paterno: apellidoPaterno, curp: curp, 
+          fecha_ini: fechaIni, fecha_nac: fechaNac, id: iden, no_tel: noTel, nombre: nombres, rfc: rfc, sexo:sexo
+        }).then(() => {
+          setIsLoading(false);
+          setVisible(false);
+        }).catch(err => console.error(err));
+      } else {
+        //PATCH
+
+      }
     } else {
       alert('Por Favor Llene Los Campos Requeridos')
     }
   }
 
   const onDelete = (id) => {
-    // const empleadoId = empleados.find((e) => e.id === id);
-    // console.log(empleadoId);
-    console.log(id);
-    const _empleado = empleados;
-    console.log(_empleado);
+    setIsLoading(true);
+    axios.delete(`${url}/${id}`).then(() => {
+      setIsLoading(false);
+    }).catch(err => console.error(err))
   }
+
+  const onEdit = (id) => {
+    setIsEdit(true);
+    setVisible(true);
+    /* const _empleado = empleados.find(e => e.id === id);
+    setEmpleado(_empleado); */
+   /*  axios.get(`${url}/${id}`).then(res => {
+      setEmpleado(res.data);
+      form.setFieldsValue({
+        'id': empleado?.id
+      });
+    }).catch(err => console.error(err)); */
+  } 
 
   const onCancel = () => {
     setVisible(false);
+    setIsEdit(false);
   }
 
 
@@ -116,14 +142,15 @@ export const Empleados = () => {
     },
     {
       title: "Acciones",
-      dataIndex: "key",
+      dataIndex: "id",
       key: "acciones",
+      width: 200,
       render: (key, record) => (
         <>
           <Button
             type="primary"
             style={{ marginRight: 16 }}
-            onClick={() => handleEdit(key)}
+            onClick={() => onEdit(key)}
           >
             Editar
           </Button>
@@ -145,7 +172,8 @@ export const Empleados = () => {
   return (
     <>
       <h1>Catálogo de Empleados</h1>
-      <Button type="primary" onClick={() => setVisible(true)}>
+      <hr />
+      <Button type="primary" onClick={() => setVisible(true)} style={{marginBottom: 20}}>
         Agregar Empleado
       </Button>
       <Table 
@@ -156,7 +184,7 @@ export const Empleados = () => {
       />
 
     <Modal
-        title="Agregar Empleado"
+        title={`${isEdit? 'Editar' : 'Agregar'} Empleado`}
         open={visible}
         onCancel={onCancel}
         width={'80%'}
@@ -169,11 +197,12 @@ export const Empleados = () => {
           </Button>,
         ]}
       >
-        <Form layout="vertical"
+        <Form
+          layout="vertical"
           onFinish={onFinish}
         >
           <Row gutter={10}>
-            <Col>
+            <Col xs={24} sm={24} md={2}>
               <Form.Item
                 name="id"
                 label="id"
@@ -257,6 +286,7 @@ export const Empleados = () => {
               <Form.Item
                 name="fecha_nac"
                 label="Fecha de Nacimiento"
+                md={8}
                 rules={[{
                   required: true,
                   message: "Este Campo Es Requerido"
