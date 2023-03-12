@@ -1,5 +1,8 @@
 import { FileOutlined, PieChartOutlined, UserOutlined, DesktopOutlined, TeamOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Navigate, Route, Routes } from "react-router-dom";
+import { Empleados, Pagos, Productos,Proveedores } from "./components/catalogos";
+import { Dashboard } from "./components/Dashboard";
 import { useState } from 'react';
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
@@ -11,15 +14,18 @@ function getItem(label, key, icon, children) {
   };
 }
 const items = [
-  getItem('Option 1', '1', <PieChartOutlined />),
-  getItem('Option 2', '2', <DesktopOutlined />),
-  getItem('User', 'sub1', <UserOutlined />, [
-    getItem('Tom', '3'),
-    getItem('Bill', '4'),
-    getItem('Alex', '5'),
+  getItem('DASHBOARD', '1', <PieChartOutlined />),
+  getItem('MANTENIMIENTOS', 'sub1', <UserOutlined />, [
+    getItem('INVENTARIOS', '3'),
+    getItem('VENTAS', '4'),
+    getItem('PEDIDOS', '5'),
   ]),
-  getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-  getItem('Files', '9', <FileOutlined />),
+  getItem('CATALOGOS', 'sub2', <UserOutlined />, [
+    getItem('EMPLEADOS', '6'),
+    getItem('PAGOS', '7'),
+    getItem('PRODUCTOS', '8'),
+    getItem('PROVEEDORES', '9'),
+  ]),
 ];
 
 export const Sidebar = () => {
@@ -38,47 +44,45 @@ export const Sidebar = () => {
           style={{
             height: 32,
             margin: 16,
-            background: 'rgba(255, 255, 255, 0.2)',
+            textAlign: 'center',
+            // background: 'rgba(255, 255, 255, 0.2)',
           }}
-        />
+        >
+            <img src="./src/components/assets/PAI-Logo.png" alt="PAILogo" style={{
+                height: 50,
+            }}/>
+        </div>
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
       </Sider>
       <Layout className="site-layout">
         <Header
           style={{
-            padding: 0,
+            textAlign: 'center',
             background: colorBgContainer,
           }}
-        />
-        <Content
+        >
+            Proyecto de Administración de Inventarios
+        </Header>
+        {<Content
           style={{
             margin: '0 16px',
           }}
         >
-          <Breadcrumb
-            style={{
-              margin: '16px 0',
-            }}
-          >
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb>
-          <div
-            style={{
-              padding: 24,
-              minHeight: 360,
-              background: colorBgContainer,
-            }}
-          >
-            Bill is a cat.
-          </div>
-        </Content>
+            <Routes>
+                <Route path="productos" element={<Productos />} />
+                <Route path="proveedores" element={<Proveedores />} />
+                <Route path="pagos" element={<Pagos />} />
+                <Route path="empleados" element={<Empleados />} />
+                <Route path="dashboard" element={<Dashboard />}/>
+                <Route path="/" element={<Navigate to="dashboard" />} />
+            </Routes>
+        </Content>}
         <Footer
           style={{
             textAlign: 'center',
           }}
         >
-          Ant Design ©2023 Created by Ant UED
+          Instituto Tecnológico de Mexicali
         </Footer>
       </Layout>
     </Layout>
