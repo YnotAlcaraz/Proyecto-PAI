@@ -8,7 +8,8 @@ import {
   Input,
   DatePicker,
   Select,
-  Col
+  Col,
+  Row
 } from "antd";
 import axios, { Axios } from "axios";
 
@@ -36,10 +37,21 @@ export const Empleados = () => {
   }, [visible]);
 
   const onFinish = () => {
-    axios.post(url, { apellido_materno: apellidoMaterno, apellido_paterno: apellidoPaterno, curp: curp, 
-      fecha_ini: fechaIni, fecha_nac: fechaNac, id: iden, no_tel: noTel, nombre: nombres, rfc: rfc, sexo:sexo
-    }).then(res => console.log(`Posting ${res}`)).catch(err => console.error(err));
-    setVisible(false);
+    if (fechaIni) {
+      axios.post(url, { apellido_materno: apellidoMaterno, apellido_paterno: apellidoPaterno, curp: curp, 
+        fecha_ini: fechaIni, fecha_nac: fechaNac, id: iden, no_tel: noTel, nombre: nombres, rfc: rfc, sexo:sexo
+      }).then(res => setVisible(false)).catch(err => console.error(err));
+    } else {
+      alert('Por Favor Llene Los Campos Requeridos')
+    }
+  }
+
+  const onDelete = (id) => {
+    // const empleadoId = empleados.find((e) => e.id === id);
+    // console.log(empleadoId);
+    console.log(id);
+    const _empleado = empleados;
+    console.log(_empleado);
   }
 
   const onCancel = () => {
@@ -116,8 +128,8 @@ export const Empleados = () => {
             Editar
           </Button>
           <Popconfirm
-            title="¿Deseas Eliminar Este Empleado?"
-            onConfirm={() => handleDelete(key)}
+            title="¿Estás seguro de que quieres eliminar este Empleado?"
+            onConfirm={() => onDelete(key)}
             okText="Sí"
             cancelText="No"
           >
@@ -126,20 +138,9 @@ export const Empleados = () => {
             </Button>
           </Popconfirm>
         </>
-      )
-    }
+      ),
+    },
   ];
-
-  const rules = [
-    {
-      required: [
-        {
-          required: true,
-          message: "Este Campo es Requerido"
-        }
-      ]
-    }
-  ]
 
   return (
     <>
@@ -158,7 +159,7 @@ export const Empleados = () => {
         title="Agregar Empleado"
         open={visible}
         onCancel={onCancel}
-        width={'75%'}
+        width={'80%'}
         footer={[
           <Button key="cancel" onClick={onCancel}>
             Cancelar
@@ -171,83 +172,136 @@ export const Empleados = () => {
         <Form layout="vertical"
           onFinish={onFinish}
         >
-          <Col>
-            <Form.Item
-              name="id"
-              label="id"
-              rules={rules.required}
-            >
-              <Input onChange={e => setIden(e.target.value)} value={iden} />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={24} md={8}>
-            <Form.Item
-              name="nombre"
-              label="Nombre(s)"
-            >
-              <Input onChange={e => setNombres(e.target.value)} value={nombres}/>
-            </Form.Item>
-            <Form.Item
-              name="apellido_paterno"
-              label="Apellido Paterno"
-            >
-              <Input onChange={e => setApellidoPaterno(e.target.value)} value={apellidoPaterno} />
-            </Form.Item>
-            <Form.Item
-              name="apellido_materno"
-              label="Apellido Materno"
-            >
-              <Input onChange={e => setApellidoMaterno(e.target.value)} value={apellidoMaterno} />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={24} md={8}>
-          <Form.Item
-            name="sexo"
-            label="Sexo"
-          >
-              <Select 
-                options={[
-                  {value: 'Femenino', label: 'Femenino'},
-                  {value: 'Masculino', label: 'Masculino'}
+          <Row gutter={10}>
+            <Col>
+              <Form.Item
+                name="id"
+                label="id"
+                rules={[{
+                    required: true,
+                    message: "Este Campo Es Requerido"
+                  }
                 ]}
-                onChange={e => {
-                  setSexo(e)
-                }} value={sexo} 
-              />
-            </Form.Item>
+              >
+                <Input onChange={e => setIden(e.target.value)} value={iden} />
+              </Form.Item>
+            </Col>
+            </Row>
+            <Row gutter={10}>
+            <Col xs={24} sm={24} md={8}>
+              <Form.Item
+                name="nombre"
+                label="Nombre(s)"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }
+              ]}
+              >
+                <Input onChange={e => setNombres(e.target.value)} value={nombres}/>
+              </Form.Item>
+              <Form.Item
+                name="apellido_paterno"
+                label="Apellido Paterno"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }
+              ]}
+              >
+                <Input onChange={e => setApellidoPaterno(e.target.value)} value={apellidoPaterno} />
+              </Form.Item>
+              <Form.Item
+                name="apellido_materno"
+                label="Apellido Materno"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }
+              ]}
+              >
+                <Input onChange={e => setApellidoMaterno(e.target.value)} value={apellidoMaterno} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={8}>
             <Form.Item
-              name="curp"
-              label="CURP"
+              name="sexo"
+              label="Sexo"
+              rules={[{
+                required: true,
+                message: "Este Campo Es Requerido"
+              }
+            ]}
             >
-              <Input onChange={e => setCurp(e.target.value)} value={curp} />
-            </Form.Item>
-            <Form.Item
-              name="fecha_nac"
-              label="Fecha de Nacimiento"
-            >
-              <DatePicker onChange={e => setFechaNac(e.format('DD/MM/YYYY'))} value={fechaNac} />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={24} md={8}>
-            <Form.Item
-              name="rfc"
-              label="RFC"
-            >
-              <Input onChange={e => setRfc(e.target.value)} value={rfc} />
-            </Form.Item>
-            <Form.Item
-              name="no_tel"
-              label="Número de Teléfono"
-            >
-              <Input onChange={e => setNoTel(e.target.value)} value={noTel} />
-            </Form.Item>
-            <Form.Item
-              name="fecha_ini"
-              label="Fecha de Inicio"
-            >
-              <DatePicker onChange={e => setFechaIni(e.format('DD/MM/YYYY'))} value={fechaIni} />
-            </Form.Item>
-          </Col>
+                <Select 
+                  options={[
+                    {value: 'Femenino', label: 'Femenino'},
+                    {value: 'Masculino', label: 'Masculino'}
+                  ]}
+                  onChange={e => {
+                    setSexo(e)
+                  }} value={sexo} 
+                />
+              </Form.Item>
+              <Form.Item
+                name="curp"
+                label="CURP"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }
+              ]}
+              >
+                <Input onChange={e => setCurp(e.target.value)} value={curp} />
+              </Form.Item>
+              <Form.Item
+                name="fecha_nac"
+                label="Fecha de Nacimiento"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }
+              ]}
+              >
+                <DatePicker onChange={e => setFechaNac(e.format('DD/MM/YYYY'))} value={fechaNac} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={8}>
+              <Form.Item
+                name="rfc"
+                label="RFC"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }
+              ]}
+              >
+                <Input onChange={e => setRfc(e.target.value)} value={rfc} />
+              </Form.Item>
+              <Form.Item
+                name="no_tel"
+                label="Número de Teléfono"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }
+              ]}
+              >
+                <Input onChange={e => setNoTel(e.target.value)} value={noTel} />
+              </Form.Item>
+              <Form.Item
+                name="fecha_ini"
+                label="Fecha de Inicio"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }
+              ]}
+              >
+                <DatePicker onChange={e => setFechaIni(e.format('DD/MM/YYYY'))} value={fechaIni} />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     </>
