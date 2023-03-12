@@ -6,8 +6,6 @@ import {
   Modal,
   Form,
   Input,
-  DatePicker,
-  Select,
   Col,
   Row
 } from "antd";
@@ -105,7 +103,7 @@ export const Pagos = () => {
 
   return (
     <>
-      <h1>Catálogo de Métodos de Pago</h1>
+      <h1>Catálogo De Métodos De Pago</h1>
       <hr />
       <Button type="primary" onClick={() => setVisible(true)} style={{marginBottom: 20}}>
         Agregar Método De Pago

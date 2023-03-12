@@ -171,7 +171,7 @@ export const Empleados = () => {
 
   return (
     <>
-      <h1>Catálogo de Empleados</h1>
+      <h1>Catálogo De Empleados</h1>
       <hr />
       <Button type="primary" onClick={() => setVisible(true)} style={{marginBottom: 20}}>
         Agregar Empleado
@@ -215,8 +215,8 @@ export const Empleados = () => {
                 <Input onChange={e => setIden(e.target.value)} value={iden} />
               </Form.Item>
             </Col>
-            </Row>
-            <Row gutter={10}>
+          </Row>
+          <Row gutter={10}>
             <Col xs={24} sm={24} md={8}>
               <Form.Item
                 name="nombre"
