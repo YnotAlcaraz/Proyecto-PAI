@@ -44,7 +44,7 @@ function TablaVentas() {
       render: (productos) => (
         <>
           {productos.map((producto) => (
-            <p key={producto.idProducto}>{producto.Nombre}</p>
+            <p key={producto.idProducto}>{producto.nombre}</p>
           ))}
         </>
       ),
@@ -91,7 +91,7 @@ function TablaVentas() {
 
     const filteredData = data.filter((item) => {
       return item.productos.some((producto) =>
-        producto.Nombre.includes(searchText)
+        producto.nombre.includes(searchText)
       );
     });
 

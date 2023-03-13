@@ -27,7 +27,7 @@ const PuntoDeVenta = () => {
 
   const handleAddToCart = (product, quantity) => {
     const existingItemIndex = cartItems.findIndex(
-      (item) => item.product.Nombre === product.Nombre
+      (item) => item.product.nombre === product.nombre
     );
 
     if (existingItemIndex !== -1) {
@@ -38,7 +38,7 @@ const PuntoDeVenta = () => {
       setCartItems([...cartItems, { product, quantity }]);
     }
 
-    setTotalVenta(totalVenta + product["Precio de venta"] * quantity);
+    setTotalVenta(totalVenta + product.precio_de_venta * quantity);
   };
 
   const handleSearchQueryChange = (e) => {
@@ -47,17 +47,17 @@ const PuntoDeVenta = () => {
 
   const handleRemoveFromCart = (product) => {
     const updatedCartItems = cartItems.filter(
-      (item) => item.product.Nombre !== product.Nombre
+      (item) => item.product.nombre !== product.nombre
     );
     setCartItems(updatedCartItems);
 
     const itemToRemove = cartItems.find(
-      (item) => item.product.Nombre === product.Nombre
+      (item) => item.product.nombre === product.nombre
     );
     if (itemToRemove) {
       setTotalVenta(
         totalVenta -
-          itemToRemove.product["Precio de venta"] * itemToRemove.quantity
+          itemToRemove.product.precio_de_venta * itemToRemove.quantity
       );
     }
   };
@@ -65,18 +65,16 @@ const PuntoDeVenta = () => {
   const handleQuantityChange = (product, quantity) => {
     const updatedCartItems = [...cartItems];
     const existingItemIndex = updatedCartItems.findIndex(
-      (item) => item.product.Nombre === product.Nombre
+      (item) => item.product.nombre === product.nombre
     );
     if (existingItemIndex !== -1) {
-      updatedCartItems[existingItemIndex].quantity = quantity;
-      setCartItems(updatedCartItems);
-
       const itemToUpdate = updatedCartItems[existingItemIndex];
-      setTotalVenta(
-        totalVenta -
-          itemToUpdate.product["Precio de venta"] * itemToUpdate.quantity +
-          itemToUpdate.product["Precio de venta"] * quantity
-      );
+      const prevItemCost =
+        itemToUpdate.product.precio_de_venta * itemToUpdate.quantity;
+      const newItemCost = itemToUpdate.product.precio_de_venta * quantity;
+      setTotalVenta(totalVenta - prevItemCost + newItemCost);
+      itemToUpdate.quantity = quantity;
+      setCartItems(updatedCartItems);
     }
   };
 
@@ -87,7 +85,7 @@ const PuntoDeVenta = () => {
       totalVenta,
       productos: cartItems.map((item) => ({
         idProducto: item.product.id,
-        Nombre: item.product.Nombre,
+        nombre: item.product.nombre,
         cantidad: item.quantity,
       })),
     };
@@ -122,9 +120,9 @@ const PuntoDeVenta = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => handleAddToCart(item, 1)}
               >
-                <Text strong>{item.Nombre}</Text> -{" "}
+                <Text strong>{item.nombre}</Text> -{" "}
                 <Text type="secondary">
-                  Precio de venta: ${item["Precio de venta"]}
+                  Precio de venta: ${item.precio_de_venta}
                 </Text>
               </List.Item>
             )}
@@ -133,11 +131,11 @@ const PuntoDeVenta = () => {
         <div style={{ width: "50%" }}>
           <div>
             {cartItems.map((item) => (
-              <div key={item.product.Nombre}>
+              <div key={item.product.nombre}>
                 <div>
-                  <Text strong>{item.product.Nombre}</Text> -{" "}
+                  <Text strong>{item.product.nombre}</Text> -{" "}
                   <Text type="secondary">
-                    Precio de venta: ${item.product["Precio de venta"]}
+                    Precio de venta: ${item.product.precio_de_venta}
                   </Text>{" "}
                   - <Text type="secondary">Cantidad: {item.quantity}</Text>{" "}
                   <a onClick={() => handleRemoveFromCart(item.product)}>
@@ -146,7 +144,7 @@ const PuntoDeVenta = () => {
                   <br />
                   <Text type="secondary">
                     Precio total: $
-                    {item.product["Precio de venta"] * item.quantity}
+                    {item.product.precio_de_venta * item.quantity}
                   </Text>
                   <br />
                   <input
@@ -170,7 +168,7 @@ const PuntoDeVenta = () => {
                   Total: $
                   {cartItems.reduce(
                     (total, item) =>
-                      total + item.product["Precio de venta"] * item.quantity,
+                      total + item.product.precio_de_venta * item.quantity,
                     0
                   )}
                 </Text>
