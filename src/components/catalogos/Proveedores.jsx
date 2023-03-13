@@ -131,8 +131,12 @@ export const Proveedores = () => {
       <Button type="primary" style={{ marginBottom: 20 }}>
         Agregar Producto
       </Button>
-
-      {useTable("http://localhost:3000/proveedores")}
+      <Table 
+        dataSource={proveedores}
+        columns={columns}
+        pagination={{ pageSize: 5 }}
+        rowKey="key"
+      />
     </>
   );
 };
