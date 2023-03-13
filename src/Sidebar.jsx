@@ -32,12 +32,12 @@ const items = [
             {
                 label: 'VENTAS',
                 icon: <FundOutlined />,
-                key: '/pedidos'
+                key: '/ventas'
             },
             {
                 label: 'PEDIDOS',
                 icon: <ScheduleOutlined />,
-                key: '/ventas'
+                key: '/pedidos'
             }
         ]
     },
