@@ -243,8 +243,6 @@ export const Proveedores = () => {
                 <Input onChange={e => setCorr(e.target.value)} value={corr} />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={10}>
             <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="tel"

@@ -163,7 +163,7 @@ export const Productos = () => {
           onFinish={ onFinish }
         >
           <Row gutter={10}>
-            <Col xs={24} sm={24} md={16}>
+            <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="id"
                 label="Id"
@@ -195,9 +195,7 @@ export const Productos = () => {
                 <Input onChange={e => setNomb(e.target.value)} value={nomb} />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={10}>
-            <Col xs={24} sm={24} md={16}>
+            <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="descripcion"
                 label="Descripción"
