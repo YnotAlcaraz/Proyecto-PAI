@@ -56,6 +56,15 @@ export const Productos = () => {
           .catch((err) => console.error(err));
       } else {
         //PATCH
+        axios.patch(`${url}/${iden}`, {
+          codigo_de_barras: codBarras,
+          nombre: nomb,
+          descripcion: desc,
+          imagen_del_producto: img,
+          precio_de_venta: precio,
+        });
+        setIsLoading(false);
+        setVisible(false);
       }
     } else {
       alert("Por Favor Llene Los Campos Requeridos");
@@ -75,6 +84,14 @@ export const Productos = () => {
   const onEdit = () => {
     setIsEdit(true);
     setVisible(true);
+
+    axios.get(`${url}/${iden}`).then((res) => {
+      setCodBarras(res.data.codigo_de_barras);
+      setNomb(res.data.nombre);
+      setDesc(res.data.descripcion);
+      setImg(res.data.imagen_del_producto);
+      setPrecio(res.data.precio_de_venta);
+    });
   };
 
   const onCancel = () => {

@@ -10,13 +10,13 @@ import {
   DatePicker,
   Select,
   Col,
-  Row
+  Row,
 } from "antd";
 import axios from "axios";
 
 export const Proveedores = () => {
-  const url = 'http://localhost:3000/proveedores';
-  const url2 = 'http://localhost:3000/pagos';
+  const url = "http://localhost:3000/proveedores";
+  const url2 = "http://localhost:3000/pagos";
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [proveedores, setProveedores] = useState([]);
@@ -39,106 +39,116 @@ export const Proveedores = () => {
     telefono: tel,
     direccion: dir,
     direccion_facturacion: dirFac,
-    forma_pago: pago
-  }
+    forma_pago: pago,
+  };
 
-  const options = pagos.map(x => {
+  const options = pagos.map((x) => {
     return {
       value: x.id,
-      label: x.descripcion
-    }
-  })
+      label: x.descripcion,
+    };
+  });
 
   useEffect(() => {
-    axios.get(url)
-    .then(res => {
-      setProveedores(res.data);
-    }).catch(err => console.error(err));
+    axios
+      .get(url)
+      .then((res) => {
+        setProveedores(res.data);
+      })
+      .catch((err) => console.error(err));
 
-    axios.get(url2)
-    .then(res => {
-      setPagos(res.data);
-    }).catch(err => console.error(err));
+    axios
+      .get(url2)
+      .then((res) => {
+        setPagos(res.data);
+      })
+      .catch((err) => console.error(err));
   }, [isLoading]);
-  
+
   const onFinish = () => {
-    if ( iden && nomb && corr && tel && dir ) {
+    if (iden && nomb && corr && tel && dir) {
       //POST
       if (!isEdit) {
         setIsLoading(true);
-        axios.post(url, data).then(() => {
-          setIsLoading(false);
-          setVisible(false);
-        }).catch(err => console.error(err));
+        axios
+          .post(url, data)
+          .then(() => {
+            setIsLoading(false);
+            setVisible(false);
+          })
+          .catch((err) => console.error(err));
       } else {
         //PATCH
       }
     } else {
-      alert('Por Favor Llene Los Campos Requeridos');
+      alert("Por Favor Llene Los Campos Requeridos");
     }
-  }
+  };
 
   const onDelete = (id) => {
     setIsLoading(true);
-    axios.delete(`${url}/${id}`).then(() => {
-      setIsLoading(false);
-    }).catch(err => console.error(err));
-  }
+    axios
+      .delete(`${url}/${id}`)
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch((err) => console.error(err));
+  };
 
   const onEdit = () => {
     setIsEdit(true);
     setVisible(true);
-  }
+  };
 
   const onCancel = () => {
     setIsEdit(false);
     setVisible(false);
-  }
+  };
 
   const columns = [
     {
       title: "Id",
       dataIndex: "id",
-      key: "id"
+      key: "id",
     },
     {
       title: "Nombre",
       dataIndex: "nombre",
-      key: "nombre"
+      key: "nombre",
     },
     {
       title: "Nombre De La Empresa",
       dataIndex: "nombre_empresa",
-      key: "nombre_empresa"
+      key: "nombre_empresa",
     },
     {
       title: "Correo Electronico",
       dataIndex: "email",
-      key: "email"
+      key: "email",
     },
     {
       title: "No. De Telefono",
       dataIndex: "telefono",
-      key: "telefono"
+      key: "telefono",
     },
     {
       title: "Dirección",
       dataIndex: "direccion",
-      key: "direccion"
+      key: "direccion",
     },
     {
       title: "Dirección De Facturación",
       dataIndex: "direccion_facturacion",
-      key: "direccion_facturacion"
+      key: "direccion_facturacion",
     },
     {
       title: "Método De Pago",
       dataIndex: "forma_pago",
       key: "forma_pago",
       render: (val) => {
-        const _valStr = val.toString();
-        return pagos.find(e => e.id === _valStr)?.descripcion;
-      }
+        const _valStr = val?.toString();
+        return pagos.find((e) => e.id === _valStr)?.descripcion;
+      },
     },
     {
       title: "Acciones",
@@ -173,22 +183,26 @@ export const Proveedores = () => {
     <>
       <h1>Catálogo De Productos</h1>
       <hr />
-      <Button type="primary" onClick={() => setVisible(true)} style={{ marginBottom: 20 }}>
+      <Button
+        type="primary"
+        onClick={() => setVisible(true)}
+        style={{ marginBottom: 20 }}
+      >
         Agregar Proovedor
       </Button>
-      <Table 
+      <Table
         dataSource={proveedores}
         columns={columns}
         pagination={{ pageSize: 5 }}
         rowKey="key"
       />
       <Modal
-        title={`${isEdit ? 'Editar' : 'Agregar'} Proveedor`}
-        open={ visible }
-        onCancel={ onCancel }
-        width={'50%'}
+        title={`${isEdit ? "Editar" : "Agregar"} Proveedor`}
+        open={visible}
+        onCancel={onCancel}
+        width={"50%"}
         footer={[
-          <Button key="cancel" onClick={ onCancel }>
+          <Button key="cancel" onClick={onCancel}>
             Cancelar
           </Button>,
           <Button key="save" type="primary" onClick={() => onFinish()}>
@@ -196,92 +210,107 @@ export const Proveedores = () => {
           </Button>,
         ]}
       >
-        <Form
-          layout="vertical"
-          onFinish={ onFinish }
-        >
+        <Form layout="vertical" onFinish={onFinish}>
           <Row gutter={10}>
             <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="id"
                 label="Id"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Este Campo Es Requerido",
+                  },
+                ]}
               >
-                <Input onChange={e => setIden(e.target.value)} value={iden} />
+                <Input onChange={(e) => setIden(e.target.value)} value={iden} />
               </Form.Item>
               <Form.Item
                 name="nombre"
                 label="Nombre"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Este Campo Es Requerido",
+                  },
+                ]}
               >
-                <Input onChange={e => setNomb(e.target.value)} value={nomb} />
+                <Input onChange={(e) => setNomb(e.target.value)} value={nomb} />
               </Form.Item>
               <Form.Item
                 name="nombre_empresa"
                 label="Nombre De La Empresa"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Este Campo Es Requerido",
+                  },
+                ]}
               >
-                <Input onChange={e => setNombEmp(e.target.value)} value={nombEmp} />
+                <Input
+                  onChange={(e) => setNombEmp(e.target.value)}
+                  value={nombEmp}
+                />
               </Form.Item>
               <Form.Item
                 name="email"
                 label="Correo Electrónico"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Este Campo Es Requerido",
+                  },
+                ]}
               >
-                <Input onChange={e => setCorr(e.target.value)} value={corr} />
+                <Input onChange={(e) => setCorr(e.target.value)} value={corr} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="tel"
                 label="Número De Teléfono"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Este Campo Es Requerido",
+                  },
+                ]}
               >
-                <Input onChange={e => setTel(e.target.value)} value={tel} />
+                <Input onChange={(e) => setTel(e.target.value)} value={tel} />
               </Form.Item>
               <Form.Item
                 name="direccion"
                 label="Dirección"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Este Campo Es Requerido",
+                  },
+                ]}
               >
-                <Input onChange={e => setDir(e.target.value)} value={dir}/>
+                <Input onChange={(e) => setDir(e.target.value)} value={dir} />
               </Form.Item>
               <Form.Item
                 name="direccion_facturacion"
                 label="Dirección De Facturación"
               >
-                <Input onChange={e => setDirFac(e.target.value)} val={dirFac} />
+                <Input
+                  onChange={(e) => setDirFac(e.target.value)}
+                  val={dirFac}
+                />
               </Form.Item>
               <Form.Item
                 name="pago"
                 label="Método De Pago"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Este Campo Es Requerido",
+                  },
+                ]}
               >
                 {/* <Input onChange={e => setPago(e.target.value)} value={pago} /> */}
-                <Select
-                  options={options}
-                />
+                <Select options={options} />
               </Form.Item>
             </Col>
           </Row>

@@ -1,30 +1,23 @@
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  Button,
-  Popconfirm,
-  Modal,
-  Form,
-  Input,
-  Col,
-  Row
-} from "antd";
+import { Table, Button, Popconfirm, Modal, Form, Input, Col, Row } from "antd";
 import axios from "axios";
 
 export const Pagos = () => {
-  const url = 'http://localhost:3000/pagos';
+  const url = "http://localhost:3000/pagos";
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [pagos, setPagos] = useState([]);
   const [visible, setVisible] = useState(false);
   const [iden, setIden] = useState();
-  const [desc, setDesc] = useState(); 
+  const [desc, setDesc] = useState();
 
   useEffect(() => {
-    axios.get(url)
-    .then(res => {
-      setPagos(res.data);
-    }).catch(err => console.error(err));
+    axios
+      .get(url)
+      .then((res) => {
+        setPagos(res.data);
+      })
+      .catch((err) => console.error(err));
   }, [isLoading]);
 
   const onFinish = () => {
@@ -32,45 +25,53 @@ export const Pagos = () => {
       //POST
       if (!isEdit) {
         setIsLoading(true);
-        axios.post(url, { id: iden, descripcion: desc })
-        .then(() => {
-          setIsLoading(false);
-          setVisible(false);
-        }).catch(err => console.error(err));
+        axios
+          .post(url, { id: iden, descripcion: desc })
+          .then(() => {
+            setIsLoading(false);
+            setVisible(false);
+          })
+          .catch((err) => console.error(err));
       } else {
         //PATCH
       }
     } else {
-      alert('Por Favor Llene Los Campos Requeridos')
+      alert("Por Favor Llene Los Campos Requeridos");
     }
-  }
+  };
 
   const onDelete = (id) => {
     setIsLoading(true);
-    axios.delete(`${url}/${id}`).then(() => {
-      setIsLoading(false);
-    }).catch(err => console.error(err));
-  }
+    axios
+      .delete(`${url}/${id}`)
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch((err) => console.error(err));
+  };
 
-  const onEdit = () => {}
+  const onEdit = (id) => {
+    setIsEdit(true);
+    setVisible(true);
+  };
 
   const onCancel = () => {
     setVisible(false);
-    setIsEdit(false)
+    setIsEdit(false);
     setIden();
     setDesc();
-  }
+  };
 
   const columns = [
     {
       title: "Id",
       dataIndex: "id",
-      key: "id"
+      key: "id",
     },
     {
       title: "Método de Pago",
       dataIndex: "descripcion",
-      key: "descripcion"
+      key: "descripcion",
     },
     {
       title: "Acciones",
@@ -105,22 +106,26 @@ export const Pagos = () => {
     <>
       <h1>Catálogo De Métodos De Pago</h1>
       <hr />
-      <Button type="primary" onClick={() => setVisible(true)} style={{marginBottom: 20}}>
+      <Button
+        type="primary"
+        onClick={() => setVisible(true)}
+        style={{ marginBottom: 20 }}
+      >
         Agregar Método De Pago
       </Button>
-      <Table 
-        dataSource={ pagos }
-        columns={ columns }
+      <Table
+        dataSource={pagos}
+        columns={columns}
         pagination={{ pageSize: 5 }}
         rowKey="key"
       />
 
       <Modal
-        title={`${isEdit ? 'Editar' : 'Agregar'} Método De Pago`}
-        open={ visible }
-        onCancel={ onCancel }
+        title={`${isEdit ? "Editar" : "Agregar"} Método De Pago`}
+        open={visible}
+        onCancel={onCancel}
         footer={[
-          <Button key="cancel" onClick={ onCancel }>
+          <Button key="cancel" onClick={onCancel}>
             Cancelar
           </Button>,
           <Button key="save" type="primary" onClick={() => onFinish()}>
@@ -128,38 +133,37 @@ export const Pagos = () => {
           </Button>,
         ]}
       >
-        <Form
-          layout="vertical"
-          onFinish={ onFinish }
-        >
+        <Form layout="vertical" onFinish={onFinish}>
           <Row gutter={10}>
-          <Col xs={24} sm={24} md={24}>
+            <Col xs={24} sm={24} md={24}>
               <Form.Item
                 name="id"
                 label="Id"
-                rules={[{
+                rules={[
+                  {
                     required: true,
-                    message: "Este Campo Es Requerido"
-                  }
+                    message: "Este Campo Es Requerido",
+                  },
                 ]}
               >
-                <Input onChange={e => setIden(e.target.value)} value={iden}/>
+                <Input onChange={(e) => setIden(e.target.value)} value={iden} />
               </Form.Item>
               <Form.Item
                 name="descripcion"
                 label="Descripción"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Este Campo Es Requerido",
+                  },
+                ]}
               >
-                <Input  onChange={e => setDesc(e.target.value)} value={desc}/>
+                <Input onChange={(e) => setDesc(e.target.value)} value={desc} />
               </Form.Item>
             </Col>
           </Row>
         </Form>
       </Modal>
-
     </>
-  )
-}
+  );
+};
