@@ -17,6 +17,7 @@ export const Pedidos = () => {
   const url = 'http://localhost:3000/pedidos';
   const urlPagos = 'http://localhost:3000/pagos';
   const urlProveedores = 'http://localhost:3000/proveedores';
+  const urlProductos = 'http://localhost:3000/productos'
   const [pedidos, setPedidos] = useState([]);
   const [pagos, setPagos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
@@ -28,6 +29,7 @@ export const Pedidos = () => {
   const [proveedor, setProveedor] = useState();
   const [metodoPago, setMetodoPago] = useState();
   const [estatus, setEstatus] = useState();
+  const [prod, setProd] = useState([]);
 
   useEffect(() => {
     axios.get(url)
@@ -41,6 +43,10 @@ export const Pedidos = () => {
     axios.get(urlProveedores)
     .then(res => {
       setProveedores(res.data);
+    }).catch(err => console.error(err));
+    axios.get(urlProductos)
+    .then(res => {
+      setProd(res.data);
     }).catch(err => console.error(err));
   }, [isLoading]);
 
@@ -57,20 +63,27 @@ export const Pedidos = () => {
       value: x.id,
       label: x.descripcion
     }
-  })
+  });
+
+  const optionProductos = prod.map(x => {
+    return {
+      value: x.id,
+      label: x.nombre
+    }
+  });
 
   const optionsProveedores = proveedores.map(x => {
     return {
       value: x.id,
       label: x.nombre_empresa
     }
-  })
+  });
 
   const optionsEstatus = [
     {value: "Autorizado", label:"Autorizado"},
     {value: "En Proceso", label:"En Proceso"},
     {value: "Entregado", label:"Entregado"},
-  ]
+  ];
 
   const onFinish = () => {
     if (estatus) {
@@ -114,8 +127,14 @@ export const Pedidos = () => {
     },
     {
       title: "Productos",
-      /* dataIndex: "productos",
-      key: "productos" */
+      dataIndex: "id",
+      key: "id",
+      render: (val) => {
+        const _valStr = val?.toString();
+        const _pedido = pedidos.find(e => e.id === _valStr)?.productos
+        console.log(_pedido);
+  
+      }
     },
     {
       title: "Proveedor",
@@ -222,7 +241,12 @@ export const Pedidos = () => {
                 label="Productos"
               >
                 <Select 
-                  onChange={e => setProductos(e)}
+                  mode="multiple"
+                  options={optionProductos}
+                  onChange={e => {
+                    setProductos(e);
+                    console.log(e);
+                  }}
                   value={productos}
                 />
               </Form.Item>
