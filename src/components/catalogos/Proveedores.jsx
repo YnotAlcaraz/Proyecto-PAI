@@ -16,20 +16,48 @@ import axios from "axios";
 
 export const Proveedores = () => {
   const url = 'http://localhost:3000/proveedores';
+  const url2 = 'http://localhost:3000/pagos';
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [proveedores, setProveedores] = useState([]);
+  const [pagos, setPagos] = useState([]);
   const [visible, setVisible] = useState(false);
   const [iden, setIden] = useState();
   const [nomb, setNomb] = useState();
+  const [nombEmp, setNombEmp] = useState();
   const [corr, setCorr] = useState();
   const [tel, setTel] = useState();
   const [dir, setDir] = useState();
+  const [dirFac, setDirFac] = useState();
+  const [pago, setPago] = useState();
+
+  const data = {
+    id: iden,
+    nombre: nomb,
+    nombre_empresa: nombEmp,
+    email: corr,
+    telefono: tel,
+    direccion: dir,
+    direccion_facturacion: dirFac,
+    forma_pago: pago
+  }
+
+  const options = pagos.map(x => {
+    return {
+      value: x.id,
+      label: x.descripcion
+    }
+  })
 
   useEffect(() => {
     axios.get(url)
     .then(res => {
       setProveedores(res.data);
+    }).catch(err => console.error(err));
+
+    axios.get(url2)
+    .then(res => {
+      setPagos(res.data);
     }).catch(err => console.error(err));
   }, [isLoading]);
   
@@ -38,9 +66,7 @@ export const Proveedores = () => {
       //POST
       if (!isEdit) {
         setIsLoading(true);
-        axios.post(url, {
-          id: iden, nombre: nomb, correo: corr, telefono: tel, direccion: dir
-        }).then(() => {
+        axios.post(url, data).then(() => {
           setIsLoading(false);
           setVisible(false);
         }).catch(err => console.error(err));
@@ -81,19 +107,38 @@ export const Proveedores = () => {
       key: "nombre"
     },
     {
-      title: "Correo Electronico",
-      dataIndex: "correo",
-      key: "correo"
+      title: "Nombre De La Empresa",
+      dataIndex: "nombre_empresa",
+      key: "nombre_empresa"
     },
     {
-      title: "No. de Telefono",
+      title: "Correo Electronico",
+      dataIndex: "email",
+      key: "email"
+    },
+    {
+      title: "No. De Telefono",
       dataIndex: "telefono",
       key: "telefono"
     },
     {
-      title: "Direccion",
+      title: "Dirección",
       dataIndex: "direccion",
       key: "direccion"
+    },
+    {
+      title: "Dirección De Facturación",
+      dataIndex: "direccion_facturacion",
+      key: "direccion_facturacion"
+    },
+    {
+      title: "Método De Pago",
+      dataIndex: "forma_pago",
+      key: "forma_pago",
+      render: (val) => {
+        const _valStr = val.toString();
+        return pagos.find(e => e.id === _valStr)?.descripcion;
+      }
     },
     {
       title: "Acciones",
@@ -128,8 +173,8 @@ export const Proveedores = () => {
     <>
       <h1>Catálogo De Productos</h1>
       <hr />
-      <Button type="primary" style={{ marginBottom: 20 }}>
-        Agregar Producto
+      <Button type="primary" onClick={() => setVisible(true)} style={{ marginBottom: 20 }}>
+        Agregar Proovedor
       </Button>
       <Table 
         dataSource={proveedores}
@@ -137,6 +182,113 @@ export const Proveedores = () => {
         pagination={{ pageSize: 5 }}
         rowKey="key"
       />
+      <Modal
+        title={`${isEdit ? 'Editar' : 'Agregar'} Proveedor`}
+        open={ visible }
+        onCancel={ onCancel }
+        width={'50%'}
+        footer={[
+          <Button key="cancel" onClick={ onCancel }>
+            Cancelar
+          </Button>,
+          <Button key="save" type="primary" onClick={() => onFinish()}>
+            Guardar
+          </Button>,
+        ]}
+      >
+        <Form
+          layout="vertical"
+          onFinish={ onFinish }
+        >
+          <Row gutter={10}>
+            <Col xs={24} sm={24} md={12}>
+              <Form.Item
+                name="id"
+                label="Id"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
+              >
+                <Input onChange={e => setIden(e.target.value)} value={iden} />
+              </Form.Item>
+              <Form.Item
+                name="nombre"
+                label="Nombre"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
+              >
+                <Input onChange={e => setNomb(e.target.value)} value={nomb} />
+              </Form.Item>
+              <Form.Item
+                name="nombre_empresa"
+                label="Nombre De La Empresa"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
+              >
+                <Input onChange={e => setNombEmp(e.target.value)} value={nombEmp} />
+              </Form.Item>
+              <Form.Item
+                name="email"
+                label="Correo Electrónico"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
+              >
+                <Input onChange={e => setCorr(e.target.value)} value={corr} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={10}>
+            <Col xs={24} sm={24} md={12}>
+              <Form.Item
+                name="tel"
+                label="Número De Teléfono"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
+              >
+                <Input onChange={e => setTel(e.target.value)} value={tel} />
+              </Form.Item>
+              <Form.Item
+                name="direccion"
+                label="Dirección"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
+              >
+                <Input onChange={e => setDir(e.target.value)} value={dir}/>
+              </Form.Item>
+              <Form.Item
+                name="direccion_facturacion"
+                label="Dirección De Facturación"
+              >
+                <Input onChange={e => setDirFac(e.target.value)} val={dirFac} />
+              </Form.Item>
+              <Form.Item
+                name="pago"
+                label="Método De Pago"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
+              >
+                {/* <Input onChange={e => setPago(e.target.value)} value={pago} /> */}
+                <Select
+                  options={options}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
     </>
   );
 };
