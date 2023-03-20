@@ -6,7 +6,6 @@ import {
   Modal,
   Form,
   Input,
-  DatePicker,
   Select,
   Col,
   Row,
@@ -14,10 +13,6 @@ import {
 import axios from "axios";
 
 export const Pedidos = () => {
-  const url = 'http://localhost:3000/pedidos';
-  const urlPagos = 'http://localhost:3000/pagos';
-  const urlProveedores = 'http://localhost:3000/proveedores';
-  const urlProductos = 'http://localhost:3000/productos'
   const [pedidos, setPedidos] = useState([]);
   const [pagos, setPagos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
