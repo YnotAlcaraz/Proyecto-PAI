@@ -25,6 +25,7 @@ export const Productos = () => {
   const [desc, setDesc] = useState();
   const [img, setImg] = useState();
   const [precio, setPrecio] = useState();
+  const [cantidad, setCantidad] = useState(0);
 
   useEffect(() => {
     axios
@@ -48,6 +49,7 @@ export const Productos = () => {
             descripcion: desc,
             imagen_del_producto: img,
             precio_de_venta: precio,
+            cantidad: cantidad
           })
           .then(() => {
             setIsLoading(false);
@@ -56,6 +58,15 @@ export const Productos = () => {
           .catch((err) => console.error(err));
       } else {
         //PATCH
+        axios.patch(`${url}/${iden}`, {
+          codigo_de_barras: codBarras,
+          nombre: nomb,
+          descripcion: desc,
+          imagen_del_producto: img,
+          precio_de_venta: precio,
+        });
+        setIsLoading(false);
+        setVisible(false);
       }
     } else {
       alert("Por Favor Llene Los Campos Requeridos");
@@ -75,6 +86,14 @@ export const Productos = () => {
   const onEdit = () => {
     setIsEdit(true);
     setVisible(true);
+
+    axios.get(`${url}/${iden}`).then((res) => {
+      setCodBarras(res.data.codigo_de_barras);
+      setNomb(res.data.nombre);
+      setDesc(res.data.descripcion);
+      setImg(res.data.imagen_del_producto);
+      setPrecio(res.data.precio_de_venta);
+    });
   };
 
   const onCancel = () => {
@@ -118,6 +137,11 @@ export const Productos = () => {
       render: (val) => `$ ${val}`,
     },
     {
+      title: "Cantidad En Stock",
+      dataIndex: "cantidad",
+      key: "cantidad"
+    },
+    {
       title: "Acciones",
       dataIndex: "id",
       key: "acciones",
@@ -148,7 +172,7 @@ export const Productos = () => {
 
   return (
     <>
-      <h1>Catálogo De Productos</h1>
+      <h1>Inventario</h1>
       <hr />
       <Button
         type="primary"
@@ -254,6 +278,16 @@ export const Productos = () => {
                   onChange={(e) => setPrecio(e.target.value)}
                   value={precio}
                 />
+              </Form.Item>
+              <Form.Item
+                name="cantidad"
+                label="Cantidad En Stock"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Obligatorio"
+                }]}
+              >
+                <Input onChange={(e) => setCantidad(e.target.value)} value={cantidad}/>
               </Form.Item>
             </Col>
           </Row>

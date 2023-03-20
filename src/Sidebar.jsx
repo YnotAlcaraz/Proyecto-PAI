@@ -28,54 +28,44 @@ const items = [
     key: "/dashboard",
   },
   {
-    label: "MANTENIMIENTOS",
-    children: [
-      {
-        label: "INVENTARIO",
-        icon: <TableOutlined />,
-        key: "/inventario",
-      },
-      {
-        label: "VENTAS",
-        icon: <FundOutlined />,
-        key: "/ventas",
-      },
-      {
-        label: "PEDIDOS",
-        icon: <ScheduleOutlined />,
-        key: "/pedidos",
-      },
-    ],
+    label: "INVENTARIO",
+    icon: <TableOutlined />,
+    key: "/productos",
   },
   {
-    label: "CATALOGOS",
-    children: [
-      {
-        label: "EMPLEADOS",
-        icon: <TeamOutlined />,
-        key: "/empleados",
-      },
-      {
-        label: "PAGOS",
-        icon: <CreditCardOutlined />,
-        key: "/pagos",
-      },
-      {
-        label: "PRODUCTOS",
-        icon: <ProfileOutlined />,
-        key: "productos",
-      },
-      {
-        label: "PROVEEDORES",
-        icon: <ContactsOutlined />,
-        key: "proveedores",
-      },
-      {
-        label: "HISTORIAL VENTAS",
-        icon: <FundOutlined />,
-        key: "/historialVentas",
-      },
-    ],
+    label: "VENTAS",
+    icon: <FundOutlined />,
+    key: "/ventas",
+  },
+  {
+    label: "HISTORIAL VENTAS",
+    icon: <FundOutlined />,
+    key: "/historialVentas",
+  },
+  {
+    label: "PEDIDOS",
+    icon: <ScheduleOutlined />,
+    key: "/pedidos",
+  },
+  {
+    label: "EMPLEADOS",
+    icon: <TeamOutlined />,
+    key: "/empleados",
+  },
+  {
+    label: "PAGOS",
+    icon: <CreditCardOutlined />,
+    key: "/pagos",
+  },
+ /*  {
+    label: "PRODUCTOS",
+    icon: <ProfileOutlined />,
+    key: "productos",
+  }, */
+  {
+    label: "PROVEEDORES",
+    icon: <ContactsOutlined />,
+    key: "proveedores", 
   },
 ];
 

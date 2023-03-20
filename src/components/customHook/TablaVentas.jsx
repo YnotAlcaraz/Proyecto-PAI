@@ -101,17 +101,17 @@ function TablaVentas() {
   return (
     <>
       <Input.Search
-        placeholder="Buscar por ID"
+        placeholder="Buscar Por ID"
         onChange={handleIdSearch}
         style={{ width: 200, marginBottom: 16 }}
       />
       <Input.Search
-        placeholder="Buscar por fecha"
+        placeholder="Buscar Por Fecha"
         onChange={handleFechaSearch}
         style={{ width: 200, marginBottom: 16 }}
       />
       <Input.Search
-        placeholder="Buscar por producto"
+        placeholder="Buscar Por Producto"
         onChange={handleProductoSearch}
         style={{ width: 200, marginBottom: 16 }}
       />

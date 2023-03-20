@@ -9,7 +9,7 @@ import {
   DatePicker,
   Select,
   Col,
-  Row
+  Row,
 } from "antd";
 import axios from "axios";
 
@@ -25,7 +25,8 @@ export const Pedidos = () => {
   const [visible, setVisible] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [iden, setIden] = useState();
-  const [productos, setProductos] = useState([]);
+  const [productos, setProductos] = useState();
+  const [cantidad, setCantidad] = useState();
   const [proveedor, setProveedor] = useState();
   const [metodoPago, setMetodoPago] = useState();
   const [estatus, setEstatus] = useState();
@@ -52,7 +53,12 @@ export const Pedidos = () => {
 
   const data = {
     id: iden,
-    productos: productos,
+    productos: [
+      {
+        idProducto: productos,
+        cantidad: cantidad,
+      }
+    ],
     idProveedor: proveedor,
     pago: metodoPago,
     estatus: estatus,
@@ -123,27 +129,12 @@ export const Pedidos = () => {
     {
       title: "Id",
       dataIndex: "id",
-      key: "id"
-    },
-    {
-      title: "Productos",
-      dataIndex: "id",
       key: "id",
-      render: (val) => {
-        const _valStr = val?.toString();
-        const _pedido = pedidos.find(e => e.id === _valStr)?.productos
-        console.log(_pedido);
-  
-      }
     },
     {
       title: "Proveedor",
       dataIndex: "idProveedor",
       key: "idProveedor",
-      render: (val) => {
-        const _valStr = val.toString();
-        return proveedores.find(e => e.id === _valStr)?.nombre_empresa
-      }
     },
     {
       title: "Método De Pago",
@@ -155,13 +146,32 @@ export const Pedidos = () => {
       }
     },
     {
-      title: "Estatus",
-      dataIndex: "estatus",
-      key: "estatus"
-    },
-    {
-      title: "Acciones",
-      dataIndex: "id",
+      title: "Producto",
+      dataIndex: "productos",
+      key: "idProducto",
+      render: (productos) =>
+      productos.map((producto) => {
+        const _nombreProducto = prod?.find((e) => e.id === producto.idProducto)?.nombre;
+        return <div key={producto.idProducto}>{_nombreProducto}</div>
+      }),
+      },
+      {
+        title: "Cantidad",
+        dataIndex: "productos",
+        key: "cantidad",
+        render: (productos) =>
+        productos.map((producto) => (
+          <div key={producto.idProducto}>{producto.cantidad}</div>
+          )),
+      },
+      {
+        title: "Estatus",
+        dataIndex: "estatus",
+        key: "estatus",
+      },
+      {
+        title: "Acciones",
+        dataIndex: "id",
       key: "acciones",
       width: 200,
       render: (key, record) => (
@@ -170,7 +180,7 @@ export const Pedidos = () => {
             type="primary"
             style={{ marginRight: 16 }}
             onClick={() => onEdit(key)}
-          >
+            >
             Editar
           </Button>
           <Popconfirm
@@ -186,8 +196,7 @@ export const Pedidos = () => {
         </>
       ),
     },
-  ];
-
+  ];;
   return (
     <>
       <h1>Pedidos</h1>
@@ -238,17 +247,21 @@ export const Pedidos = () => {
             <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="productos"
-                label="Productos"
+                label="Producto"
               >
                 <Select 
-                  mode="multiple"
                   options={optionProductos}
                   onChange={e => {
                     setProductos(e);
-                    console.log(e);
                   }}
                   value={productos}
                 />
+              </Form.Item>
+              <Form.Item
+                name="cantidad"
+                label="Cantidad"
+              >
+                <Input onChange={e => setCantidad(e.target.value)} value={cantidad}/>
               </Form.Item>
               <Form.Item
                 name="proveedor"
