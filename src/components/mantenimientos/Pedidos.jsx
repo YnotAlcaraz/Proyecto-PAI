@@ -13,6 +13,10 @@ import {
 import axios from "axios";
 
 export const Pedidos = () => {
+  const url = 'http://localhost:3000/pedidos';
+  const urlPagos = 'http://localhost:3000/pagos';
+  const urlProveedores = 'http://localhost:3000/proveedores';
+  const urlProductos = 'http://localhost:3000/productos';
   const [pedidos, setPedidos] = useState([]);
   const [pagos, setPagos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
@@ -47,7 +51,6 @@ export const Pedidos = () => {
   }, [isLoading]);
 
   const data = {
-    id: iden,
     productos: [
       {
         idProducto: productos,
@@ -135,10 +138,7 @@ export const Pedidos = () => {
       title: "Método De Pago",
       dataIndex: "pago",
       key: "pago",
-      render: (val) => {
-        const _valStr = val.toString();
-        return pagos.find(e => e.id === _valStr)?.descripcion
-      }
+      render: (val) => pagos.find(e => e.id === val)?.descripcion,
     },
     {
       title: "Producto",
@@ -224,20 +224,6 @@ export const Pedidos = () => {
           layout="vertical"
           onFinish={ onFinish }
         >
-          <Row gutter={10}>
-            <Col xs={24} sm={24} md={2}>
-              <Form.Item
-                name="id"
-                label="Id"
-                rules={[{
-                  required: true,
-                  message: "Este Campo Es Requerido"
-                }]}
-              >
-                <Input onChange={e => setIden(e.target.value)} value={iden} />
-              </Form.Item>
-            </Col>
-          </Row>
           <Row gutter={10}>
             <Col xs={24} sm={24} md={12}>
               <Form.Item

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Table, Button, Popconfirm, Modal, Form, Input, Col, Row } from "antd";
 import axios from "axios";
 
-export const Pagos = () => {
-  const url = "http://localhost:3000/pagos";
+export const Categorias = () => {
+  const url = "http://localhost:3000/categorias";
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [pagos, setPagos] = useState([]);
@@ -104,7 +104,7 @@ export const Pagos = () => {
 
   return (
     <>
-      <h1>Catálogo De Métodos De Pago</h1>
+      <h1>Catálogo De Categorías</h1>
       <hr />
       <Button
         type="primary"

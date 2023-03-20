@@ -5,6 +5,7 @@ import {
   CreditCardOutlined,
   TeamOutlined,
   TableOutlined,
+  GroupOutlined,
   ScheduleOutlined,
   ContactsOutlined,
 } from "@ant-design/icons/lib/icons";
@@ -15,6 +16,7 @@ import {
   Pagos,
   Productos,
   Proveedores,
+  Categorias
 } from "./components/catalogos";
 import { Inventario, Pedidos, Ventas } from "./components/mantenimientos";
 import { Dashboard } from "./components/Dashboard";
@@ -48,24 +50,34 @@ const items = [
     key: "/pedidos",
   },
   {
-    label: "EMPLEADOS",
-    icon: <TeamOutlined />,
-    key: "/empleados",
-  },
-  {
-    label: "PAGOS",
-    icon: <CreditCardOutlined />,
-    key: "/pagos",
-  },
- /*  {
-    label: "PRODUCTOS",
-    icon: <ProfileOutlined />,
-    key: "productos",
-  }, */
-  {
-    label: "PROVEEDORES",
-    icon: <ContactsOutlined />,
-    key: "proveedores", 
+    label: 'CATALOGOS',
+    children: [
+      {
+        label: "EMPLEADOS",
+        icon: <TeamOutlined />,
+        key: "/empleados",
+      },
+      {
+        label: "PAGOS",
+        icon: <CreditCardOutlined />,
+        key: "/pagos",
+      },
+      /* {
+        label: "PRODUCTOS",
+        icon: <ProfileOutlined />,
+        key: "/productos",
+      }, */
+      {
+        label: "CATEGORÍAS",
+        icon: <GroupOutlined/>,
+        key: "/categorias"
+      },
+      {
+        label: "PROVEEDORES",
+        icon: <ContactsOutlined />,
+        key: "/proveedores", 
+      },
+    ],
   },
 ];
 
@@ -83,6 +95,7 @@ export const Sidebar = () => {
           <Route path="/pagos" element={<Pagos />} />
           <Route path="/empleados" element={<Empleados />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/categorias" element={<Categorias />} />
           <Route path="/historialVentas" element={<VentasH />} />
           <Route path="/" element={<Navigate to="dashboard" />} />
         </Routes>
