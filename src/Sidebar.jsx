@@ -18,7 +18,12 @@ import {
   Proveedores,
   Categorias
 } from "./components/catalogos";
-import { Inventario, Pedidos, Ventas } from "./components/mantenimientos";
+import {
+  Inventario,
+  MantVentas,
+  Pedidos,
+  Ventas
+} from "./components/mantenimientos";
 import { Dashboard } from "./components/Dashboard";
 import { useState } from "react";
 import VentasH from "./components/catalogos/Ventas";
@@ -37,13 +42,18 @@ const items = [
   {
     label: "VENTAS",
     icon: <FundOutlined />,
+    key: "/mantVentas"
+  },
+  /* {
+    label: "VENTAS",
+    icon: <FundOutlined />,
     key: "/ventas",
   },
   {
     label: "HISTORIAL VENTAS",
     icon: <FundOutlined />,
     key: "/historialVentas",
-  },
+  }, */
   {
     label: "PEDIDOS",
     icon: <ScheduleOutlined />,
@@ -89,6 +99,7 @@ export const Sidebar = () => {
         <Routes>
           <Route path="/inventario" element={<Inventario />} />
           <Route path="/pedidos" element={<Pedidos />} />
+          <Route path="/mantVentas" element={<MantVentas />} />
           <Route path="/ventas" element={<Ventas />} />
           <Route path="/productos" element={<Productos />} />
           <Route path="/proveedores" element={<Proveedores />} />
