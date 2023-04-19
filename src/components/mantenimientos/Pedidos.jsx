@@ -133,6 +133,7 @@ export const Pedidos = () => {
       title: "Proveedor",
       dataIndex: "idProveedor",
       key: "idProveedor",
+      render: (val) => proveedores.find((e) => e.id === val)?.nombre_empresa,
     },
     {
       title: "Método De Pago",
