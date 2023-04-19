@@ -178,7 +178,7 @@ export const Proveedores = () => {
 
   return (
     <>
-      <h1>Catálogo De Productos</h1>
+      <h1>Catálogo De Proveedores</h1>
       <hr />
       <Form
         layout="vertical"

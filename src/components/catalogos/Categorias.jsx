@@ -121,7 +121,7 @@ export const Categorias = () => {
       />
 
       <Modal
-        title={`${isEdit ? "Editar" : "Agregar"} Método De Pago`}
+        title={`${isEdit ? "Editar" : "Agregar"} Categoría`}
         open={visible}
         onCancel={onCancel}
         footer={[
