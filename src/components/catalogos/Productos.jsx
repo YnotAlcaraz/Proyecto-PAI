@@ -198,6 +198,40 @@ export const Productos = () => {
     <>
       <h1>Inventario</h1>
       <hr />
+      <Form
+        layout="vertical"
+      >
+        <Row gutter={10}>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Código de Barras"
+            >
+              <Input.Search
+                placeholder="Código de Barras"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Nombre"
+            >
+              <Input.Search
+                placeholder="Nombre"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Categoría"
+            >
+              <Select
+                placeholder="Categoría"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+
       <Button
         type="primary"
         onClick={() => setVisible(true)}

@@ -211,6 +211,41 @@ export const Empleados = () => {
     <>
       <h1>Catálogo De Empleados</h1>
       <hr />
+
+      <Form
+        layout="vertical"
+      >
+        <Row gutter={10}>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Nombre"
+            >
+              <Input.Search
+                placeholder="Nombre"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Apellido"
+            >
+              <Input.Search
+                placeholder="Apellido Paterno"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Sexo"
+            >
+              <Select
+                placeholder="Sexo"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+
       <Button
         type="primary"
         onClick={() => setVisible(true)}
