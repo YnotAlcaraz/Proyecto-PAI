@@ -94,15 +94,15 @@ export const Pedidos = () => {
       //POST
       if (!isEdit) {
         setIsLoading(true);
-        axios.post(url, data). then(() => {
+        axios.post(url, data).then(() => {
           setIsLoading(false);
           setVisible(false);
-        }).catch(err => console.error(err))
+        }).catch(err => console.error(err));
       } else {
         //PATCH
       }
     } else {
-      alert('Por Favor Llene Los Campos Requeridos')
+      alert('Por Favor Llene Los Campos Requeridos');
     }
   }
 

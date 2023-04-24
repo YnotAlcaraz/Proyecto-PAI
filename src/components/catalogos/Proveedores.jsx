@@ -302,6 +302,12 @@ export const Proveedores = () => {
               <Form.Item
                 name="direccion_facturacion"
                 label="Dirección De Facturación"
+                rules={[
+                  {
+                    required: true,
+                    message: "Este Campo Es Requerido",
+                  },
+                ]}
               >
                 <Input
                   onChange={(e) => setDirFac(e.target.value)}

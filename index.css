@@ -6,3 +6,7 @@
 .Content {
     margin: 15px;
 }
+
+.ant-input-disabled {
+    color: black !important;
+}

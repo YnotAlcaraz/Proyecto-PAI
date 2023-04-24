@@ -6,28 +6,129 @@ import {
   Modal,
   Form,
   Input,
+  InputNumber,
   DatePicker,
   Select,
   Col,
   Row,
+  Spin,
 } from "antd";
+import axios from "axios";
 
 export const MantVentas = () => {
+    const [form] = Form.useForm();
+    const urlVentas = 'http://localhost:3000/ventas';
+    const urlVentasProductos = 'http://localhost:3000/ventas_productos';
+    const urlProductos = 'http://localhost:3000/productos';
+    const urlCategorias = 'http://localhost:3000/categorias';
+    const [ventas, setVentas] = useState([]);
+    const [venta, setVenta] = useState({});
+    const [ventasProductos, setVentasProductos] = useState([]);
+    const [ventaProducto, setVentaProducto] = useState();
+    const [idVenta, setIdVenta] = useState();
+    const [productos, setProductos] = useState([]);
+    const [productosFiltered, setProductosFiltered] = useState([]);
+    const [categorias, setCategorias] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [visible, setVisible] = useState(false);
     const [visibleReporte, setVisibleReporte] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
 
-    const onEdit = () => {
-        setIsEdit(true);
-        setVisible(true);
+    useEffect(() => {
+      axios.get(urlVentas)
+      .then(res => {
+        setVentas(res.data);
+      }).catch(err => console.error(err));
+      axios.get(urlVentasProductos)
+      .then(res => {
+        setVentasProductos(res.data);
+      }).catch(err => console.error(err));
+      axios.get(urlProductos)
+      .then(res => {
+        setProductos(res.data);
+      }).catch(err => console.error(err));
+      axios.get(urlCategorias)
+      .then(res => {
+        setCategorias(res.data);
+      }).catch(err => console.err(err));
+    }, [isLoading]);
+
+    const fetchData = () => {
+        axios.get(urlVentasProductos)
+        .then(res => {
+            const _ventasProductos = res.data;
+            setVentaProducto(_ventasProductos?.filter((e) => e.idVenta === idVenta));
+            console.log(_ventasProductos?.filter((e) => e.idVenta === idVenta));
+      }).catch(err => console.error(err));
+
     }
 
-    const onFinish = () => {}
+    const onChangeCategoria = (value) => {
+        const _productosFiltered = productos?.filter((e) => e.categoria === value);
+        setProductosFiltered(_productosFiltered);
+    }
+
+    const onChangeProducto = (value) => {
+        const _producto = productos.find((e) => e.id === value);
+        form.setFieldsValue({ id_del_producto: _producto?.id });
+        form.setFieldsValue({ codigo_de_barras: _producto?.codigo_de_barras });
+    }
+
+    const onAddProducto = () => {
+        const _dataProducto = form.getFieldsValue();
+        setIsLoading(true);
+        axios.post(urlVentasProductos, _dataProducto).then(() => {
+            form.resetFields();
+            form.setFieldsValue({idVenta: idVenta});
+            setIsLoading(false);
+        }).catch(err => console.error(err));
+        fetchData();
+    }
+
+
+    const onFinish = () => {
+        if (!isEdit) {
+            setIsLoading(true);
+            axios.post(urlVentas, { fecha_venta: 'fechaVentaTest' }).then(() => {
+                setIsLoading(false);
+            }).catch(err => console.error(err));
+        }
+    }
+
+    const categoriasOptions = categorias.map(x => {
+        return {
+            value: x.id,
+            label: x.descripcion,
+        }
+    });
+
+    const productosOptions = productosFiltered.map(x => {
+        return {
+            value: x.id,
+            label: x.nombre,
+        }
+    });
+
+    const onDelete = (id) => {
+        setIsLoading(true);
+        axios.delete(`${urlVentas}/${id}`).then(() => {
+            setIsLoading(false);
+        }).catch(err => console.error(err));
+    }
+
+    const onEdit = (id) => {
+        setIsEdit(true);
+        setVisible(true);
+        setIdVenta(id);
+        form.setFieldsValue({ idVenta: id })
+        setVentaProducto(ventasProductos?.filter((e) => e.idVenta === id));
+    }
 
     const onCancel = () => {
         setIsEdit(false);
         setVisible(false);
         setVisibleReporte(false);
+        setIdVenta();
     }
 
     const columns = [
@@ -44,23 +145,37 @@ export const MantVentas = () => {
         },
         {
             title: "Monto total de la venta",
-            dataIndex: "total_venta",
+            dataIndex: "id",
             key: "total_venta",
             render: (val) => {
-                return `$ ${val}`
+                const _productosVenta = ventasProductos.filter((e) => e.idVenta === val);
+                let montoTotal = 0;
+                _productosVenta.map((x) => {
+                    const _precio = productos.find((e) => e.id === x.id_del_producto)?.precio_de_venta;
+                    const _cantidad = x.cantidad;
+                    const _monto = _precio * _cantidad;
+                    montoTotal = montoTotal + _monto;
+                });
+                return `$${montoTotal}`;
             }
         },
         {
             title: "Productos",
-            dataIndex: "productos",
+            dataIndex: "id",
             key: "productos",
-            render: (productos) => (
-                <>
-                  {productos.map((producto) => (
-                    <p key={producto.nombre}>{producto.nombre} - Cantidad: 1</p>
-                  ))}
-                </>
-              ),
+            render: (val) => {
+                const _productosVenta = ventasProductos.filter((e) => e.idVenta === val);
+                console.log(_productosVenta);
+                {
+                    _productosVenta.map((x) => {
+                        const _nombre = productos.find((e) => e.id === x.id_del_producto)?.nombre;
+                        const _cantidad = x.cantidad;
+                        return (
+                            <p>{_nombre} - Cantidad: {_cantidad}</p>
+                        )
+                    });
+                }
+            },
         },
         {
             title: "Acciones",
@@ -77,7 +192,7 @@ export const MantVentas = () => {
                   Editar
                 </Button>
                 <Popconfirm
-                  title="¿Deseas Eliminar Este Proveedor?"
+                  title="¿Deseas Eliminar Esta Venta?"
                   onConfirm={() => onDelete(key)}
                   okText="Sí"
                   cancelText="No"
@@ -94,43 +209,51 @@ export const MantVentas = () => {
     const columns2 = [
         {
             title: "Id",
-            dataIndex: "idProducto",
-            key: "idProducto"
+            dataIndex: "id_del_producto",
+            key: "id_del_producto"
         },
         {
             title: "Nombre del Producto",
-            dataIndex: "nombreProducto",
-            key: "nombreProducto"
+            dataIndex: "nombre_del_producto",
+            key: "nombre_del_producto",
+            render: (val) => productos.find((e) => e.id === val)?.nombre,
         },
         {
             title: "Descripción",
-            dataIndex: "descripcionProducto",
-            key: "descripcionProducto"
+            dataIndex: "id_del_producto",
+            key: "descripcion_del_producto",
+            render: (val) => productos.find((e) => e.id === val)?.descripcion,
         },
         {
             title: "Imagen del Producto",
-            dataIndex: "imagenProducto",
-            key: "imagenProducto",
-            render: (text) => (
-                <img src={text} style={{ maxHeight: '100px'}} />
-            )
+            dataIndex: "id_del_producto",
+            key: "imagen_del_producto",
+            render: (val) => {
+                const _text = productos.find((e) => e.id === val)?.imagen_del_producto;
+                return <img src={_text} style={{ maxHeight: '100px'}} />
+            }
         },
         {
             title: "Categoría",
-            dataIndex: "categoriaProducto",
-            key: "categoriaProducto"
+            dataIndex: "categoria",
+            key: "categoria",
+            render: (val) => categorias.find((e) => e.id === val)?.descripcion,
         },
         {
             title: "Cantidad",
-            dataIndex: "cantidadProducto",
-            key: "cantidadProducto"
+            dataIndex: "cantidad",
+            key: "cantidad"
         },
         {
             title: "Monto",
-            dataIndex: "montoProducto",
-            key: "cantidadProducto",
+            dataIndex: "id_del_producto",
+            key: "monto_del_producto",
             render: (val) => {
-                return `$ ${val}`
+                const _costo = productos.find((e) => e.id === val)?.precio_de_venta;
+                const _productosVenta = ventasProductos.filter((e) => e.idVenta === idVenta);
+                const _productoCantidad = _productosVenta?.find((e) => e.id_del_producto === val)?.cantidad;
+                const _monto = _costo * _productoCantidad;
+                return `$${_monto}` || '';
             }
         },
     ];
@@ -162,74 +285,13 @@ export const MantVentas = () => {
         },
     ]
 
-    const dataVentas = [
-        {
-            id: 1,
-            fecha_venta: '18/04/2023',
-            total_venta: 3778,
-            productos: [
-                {
-                    nombre: 'Logitech G305'
-                },
-                {
-                    nombre: 'Sceptre E205W-16003R'
-                },
-                {
-                    nombre: 'Logitech G213'
-                }
-            ]
-        },
-    ]
-
-    const dataProducto = [
-        {
-            idProducto: 84,
-            nombreProducto: 'Logitech G305',
-            descripcionProducto: 'Mouse inalámbrico para computadora',
-            imagenProducto: 'https://m.media-amazon.com/images/I/51eXBGX+MYL._AC_SL1500_.jpg',
-            categoriaProducto: 'Ratones',
-            cantidadProducto: 2,
-            montoProducto: 1000,
-        },
-        {
-            idProducto: 85,
-            nombreProducto: 'Sceptre E205W-16003R',
-            descripcionProducto: 'Monitor para computadora',
-            imagenProducto: 'https://m.media-amazon.com/images/I/51v6h2TfPCL._AC_SL1195_.jpg',
-            categoriaProducto: 'Monitores',
-            cantidadProducto: 1,
-            montoProducto: 2397,
-        },
-    ]
-
-    const dataReporte = [
-        {
-            noRow: 1,
-            productoNombre: "Logitech G305",
-            cantidadVendida: 3,
-            montoTotal: 1500,
-        },
-        {
-            noRow: 2,
-            productoNombre: "Sceptre E205W-16003R",
-            cantidadVendida: 2,
-            montoTotal: 4794,
-        },
-        {
-            noRow: 3,
-            productoNombre: "Logitech G213",
-            cantidadVendida: 1,
-            montoTotal: 881,
-        }
-    ]
-
   return (
      <>
         <h1>Ventas</h1>
         <hr />
         <Button
             type="primary"
-            onClick={() => setVisible(true)}
+            onClick={() => onFinish()}
             style={{ marginBottom: 20, marginRight: 10 }}
         >
             Agregar Venta
@@ -242,8 +304,8 @@ export const MantVentas = () => {
             Generar Reporte
         </Button>
         <Table
+            dataSource={ventas}
             columns={columns}
-            dataSource={dataVentas}
         />
         <Modal
             title={`${isEdit ? "Editar" : "Agregar"} Venta`}
@@ -254,70 +316,97 @@ export const MantVentas = () => {
                 <Button key="cancel" onClick={onCancel}>
                     Cancelar
                 </Button>,
-                <Button key="save" type="primary" onClick={() => onFinish()}>
-                    Registrar Venta
-                </Button>,
             ]}
         >
-            <Form layout="vertical" onFinish={onFinish}>
-                <Row gutter={10}>
-                    <Col xs={24} sm={24} md={8}>
-                        <Form.Item
-                            label="Categoría"
-                        >
-                            <Select />
-                        </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={24} md={8}>
-                        <Form.Item
-                            label="Id de producto"
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={24} md={8}>
-                        <Form.Item
-                            label="Nombre de producto"
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Row gutter={10}>
-                    <Col xs={24} sm={24} md={8}>
-                        <Form.Item
-                            label="Cantidad"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Este Campo Es Requerido"
-                                }
-                            ]}
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={24} md={8}>
-                        <Form.Item
-                            label="Código de Barras"
-                        >
-                            <Input
-                                disabled
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={24} md={8}>
-                        <Form.Item>
-                            <Button key="agregar" style={{marginTop: "30px"}}>
-                                Agregar Producto
-                            </Button>
-                        </Form.Item>
-                    </Col>
-                </Row>
-            </Form>
+            <Spin spinning={isLoading}>
+                <Form layout="vertical" onFinish={onFinish} form={form}>
+                    <Row gutter={10}>
+                        <Col xs={24} sm={24} md={4}>
+                            <Form.Item
+                                name="idVenta"
+                                label="Id De La Venta"
+                            >
+                                <Input disabled/>
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} sm={24} md={4}>
+                            <Form.Item
+                                name="id_del_producto"
+                                label="Id del producto"
+                            >
+                                <Input disabled/>
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} sm={24} md={8}>
+                            <Form.Item
+                                name="categoria"
+                                label="Categoría"
+                            >
+                                <Select
+                                    options={categoriasOptions}
+                                    onChange={onChangeCategoria}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} sm={24} md={8}>
+                            <Form.Item
+                                name="nombre_del_producto"
+                                label="Nombre Del producto"
+                            >
+                                <Select
+                                    options={productosOptions}
+                                    onChange={onChangeProducto}
+                                />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row gutter={10}>
+                        <Col xs={24} sm={24} md={8}>
+                            <Form.Item
+                                name="cantidad"
+                                label="Cantidad"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Este Campo Es Requerido"
+                                    }
+                                ]}
+                            >
+                                <InputNumber
+                                    style={{ width: '100%' }}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} sm={24} md={8}>
+                            <Form.Item
+                                name="codigo_de_barras"
+                                label="Código de Barras"
+                            >
+                                <Input
+                                    disabled
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col xs={24} sm={24} md={8}>
+                            <Form.Item>
+                                <Button
+                                    key="agregar"
+                                    onClick={onAddProducto}
+                                    style={{
+                                        marginTop: '30px',
+                                        width: '100%'
+                                    }}
+                                >
+                                    Agregar Producto
+                                </Button>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </Form>
+            </Spin>
             <Table
                 columns={columns2}
-                dataSource={dataProducto}
+                dataSource={ventaProducto}
             />
         </Modal>
         <Modal
@@ -411,7 +500,6 @@ export const MantVentas = () => {
             </Form>
             <Table
                 columns={columns3}
-                dataSource={dataReporte}
             />
         </Modal>
     </>
