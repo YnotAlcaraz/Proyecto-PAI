@@ -20,6 +20,7 @@ export const Proveedores = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [proveedores, setProveedores] = useState([]);
+  const [proveedor, setProveedor] = useState({});
   const [pagos, setPagos] = useState([]);
   const [visible, setVisible] = useState(false);
   const [iden, setIden] = useState();
@@ -30,24 +31,18 @@ export const Proveedores = () => {
   const [dir, setDir] = useState();
   const [dirFac, setDirFac] = useState();
   const [pago, setPago] = useState();
+  const [selectedPayment, setSelectedPayment] = useState("");
 
-  const data = {
-    id: iden,
-    nombre: nomb,
-    nombre_empresa: nombEmp,
-    email: corr,
-    telefono: tel,
-    direccion: dir,
-    direccion_facturacion: dirFac,
-    forma_pago: pago,
+  const [form] = Form.useForm();
+
+
+
+const options = pagos.map((x) => {
+  return {
+    value: x.id,
+    label: x.descripcion,
   };
-
-  const options = pagos.map((x) => {
-    return {
-      value: x.id,
-      label: x.descripcion,
-    };
-  });
+});
 
   useEffect(() => {
     axios
@@ -63,15 +58,34 @@ export const Proveedores = () => {
         setPagos(res.data);
       })
       .catch((err) => console.error(err));
+
+      form.setFieldValue({
+        nombre: nomb,
+        nombre_empresa: nombEmp,
+        email: corr,
+        telefono: tel,
+        direccion: dir,
+        direccion_facturacion: dirFac,
+        forma_pago: selectedPayment
+      })
+
   }, [isLoading]);
 
   const onFinish = () => {
-    if (iden && nomb && corr && tel && dir) {
+    if ( nomb && corr && tel && dir && nombEmp && dirFac && selectedPayment) {
       //POST
       if (!isEdit) {
         setIsLoading(true);
         axios
-          .post(url, data)
+          .post(url, {
+            nombre: nomb,
+            nombre_empresa: nombEmp,
+            email: corr,
+            telefono: tel,
+            direccion: dir,
+            direccion_facturacion: dirFac,
+            forma_pago: selectedPayment
+          })
           .then(() => {
             setIsLoading(false);
             setVisible(false);
@@ -79,6 +93,27 @@ export const Proveedores = () => {
           .catch((err) => console.error(err));
       } else {
         //PATCH
+        axios
+          .patch(`${url}/${proveedor.id}`,{
+            nombre: nomb,
+            nombre_empresa: nombEmp,
+            email: corr,
+            telefono: tel,
+            direccion: dir,
+            direccion_facturacion: dirFac,
+            forma_pago: selectedPayment
+          })
+          .then(() => {
+            setIsLoading(false);
+            setVisible(false);
+            axios
+            .get(url)
+            .then((res) => {
+              setProveedores(res.data);
+             })
+  
+            // window.location.reload();
+          });
       }
     } else {
       alert("Por Favor Llene Los Campos Requeridos");
@@ -95,9 +130,26 @@ export const Proveedores = () => {
       .catch((err) => console.error(err));
   };
 
-  const onEdit = () => {
+  const onEdit = (id) => {
     setIsEdit(true);
     setVisible(true);
+    axios
+      .get(`${url}/${id}`)
+      .then((res) => {
+        
+        setNomb(res.data.nombre);
+        setNombEmp(res.data.nombre_empresa);
+        setDir(res.data.direccion);
+        setDirFac(res.data.direccion_facturacion);
+        setCorr(res.data.email);
+        setSelectedPayment(res.data.forma_pago);
+        setTel(res.data.telefono);
+        setIden(res.data.id);
+        
+        setProveedor(res.data);
+        
+      })
+      .catch((err) => console.error(err));
   };
 
   const onCancel = () => {
@@ -180,8 +232,9 @@ export const Proveedores = () => {
     <>
       <h1>Catálogo De Proveedores</h1>
       <hr />
-      <Form
+      <Form 
         layout="vertical"
+        
       >
         <Row gutter={10}>
           <Col xs={24} sm={4} md={6}>
@@ -209,7 +262,7 @@ export const Proveedores = () => {
         onClick={() => setVisible(true)}
         style={{ marginBottom: 20 }}
       >
-        Agregar Proovedor
+        Agregar Proveedor
       </Button>
       <Table
         dataSource={proveedores}
@@ -231,11 +284,11 @@ export const Proveedores = () => {
           </Button>,
         ]}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form form={form}  layout="vertical" onFinish={onFinish}>
           <Row gutter={10}>
             <Col xs={24} sm={24} md={12}>
               <Form.Item
-                name="nombre"
+                
                 label="Nombre"
                 rules={[
                   {
@@ -244,10 +297,11 @@ export const Proveedores = () => {
                   },
                 ]}
               >
-                <Input onChange={(e) => setNomb(e.target.value)} value={nomb} />
+                <Input value={nomb} 
+                onChange={(e) => setNomb(e.target.value)} />
               </Form.Item>
               <Form.Item
-                name="nombre_empresa"
+                
                 label="Nombre De La Empresa"
                 rules={[
                   {
@@ -262,7 +316,7 @@ export const Proveedores = () => {
                 />
               </Form.Item>
               <Form.Item
-                name="email"
+                
                 label="Correo Electrónico"
                 rules={[
                   {
@@ -274,7 +328,7 @@ export const Proveedores = () => {
                 <Input onChange={(e) => setCorr(e.target.value)} value={corr} />
               </Form.Item>
               <Form.Item
-                name="tel"
+                
                 label="Número De Teléfono"
                 rules={[
                   {
@@ -288,7 +342,7 @@ export const Proveedores = () => {
             </Col>
             <Col xs={24} sm={24} md={12}>
               <Form.Item
-                name="direccion"
+                
                 label="Dirección"
                 rules={[
                   {
@@ -300,7 +354,7 @@ export const Proveedores = () => {
                 <Input onChange={(e) => setDir(e.target.value)} value={dir} />
               </Form.Item>
               <Form.Item
-                name="direccion_facturacion"
+                
                 label="Dirección De Facturación"
                 rules={[
                   {
@@ -309,13 +363,11 @@ export const Proveedores = () => {
                   },
                 ]}
               >
-                <Input
-                  onChange={(e) => setDirFac(e.target.value)}
-                  val={dirFac}
+                <Input onChange={(e) => setDirFac(e.target.value)} val={dirFac}
                 />
               </Form.Item>
               <Form.Item
-                name="pago"
+                
                 label="Método De Pago"
                 rules={[
                   {
@@ -325,7 +377,12 @@ export const Proveedores = () => {
                 ]}
               >
                 {/* <Input onChange={e => setPago(e.target.value)} value={pago} /> */}
-                <Select options={options} />
+                <Select
+   options={options}
+   value={selectedPayment}
+   onChange={value => setSelectedPayment(value)}
+/>
+
               </Form.Item>
             </Col>
           </Row>

@@ -6,18 +6,28 @@ export const Categorias = () => {
   const url = "http://localhost:3000/categorias";
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [pagos, setPagos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [categoria, setCategoria] = useState({});
   const [visible, setVisible] = useState(false);
   const [iden, setIden] = useState();
   const [desc, setDesc] = useState();
+  const [changeInput, setChangeInput] = useState('');
+
+
+  const [form] = Form.useForm();
 
   useEffect(() => {
     axios
       .get(url)
       .then((res) => {
-        setPagos(res.data);
+        setCategorias(res.data);
       })
       .catch((err) => console.error(err));
+
+      form.setFieldValue({
+        descripcion: desc,
+      })
+
   }, [isLoading]);
 
   const onFinish = () => {
@@ -34,6 +44,23 @@ export const Categorias = () => {
           .catch((err) => console.error(err));
       } else {
         //PATCH
+        axios
+        .patch(`${url}/${categoria.id}`, {
+         descripcion: desc,
+         id: iden,
+        })
+        .then(() => {
+          setIsLoading(false);
+          setVisible(false);
+          axios
+          .get(url)
+          .then((res) => {
+            setCategorias(res.data);
+           })
+
+          // window.location.reload();
+        });
+        
       }
     } else {
       alert("Por Favor Llene Los Campos Requeridos");
@@ -53,14 +80,25 @@ export const Categorias = () => {
   const onEdit = (id) => {
     setIsEdit(true);
     setVisible(true);
+    
+    axios
+      .get(`${url}/${id}`)
+      .then((res) => {
+        
+        setDesc(res.data.descripcion);
+        setIden(res.data.id);
+        setCategoria(res.data);
+        
+      })
+      .catch((err) => console.error(err));
   };
 
   const onCancel = () => {
     setVisible(false);
     setIsEdit(false);
-    setIden();
-    setDesc();
+      
   };
+  
 
   const columns = [
     {
@@ -69,7 +107,7 @@ export const Categorias = () => {
       key: "id",
     },
     {
-      title: "Método de Pago",
+      title: "Categoria",
       dataIndex: "descripcion",
       key: "descripcion",
     },
@@ -88,7 +126,7 @@ export const Categorias = () => {
             Editar
           </Button>
           <Popconfirm
-            title="¿Deseas Eliminar Este Método De Pago?"
+            title="¿Deseas Eliminar Esta Categoria?"
             onConfirm={() => onDelete(key)}
             okText="Sí"
             cancelText="No"
@@ -111,10 +149,10 @@ export const Categorias = () => {
         onClick={() => setVisible(true)}
         style={{ marginBottom: 20 }}
       >
-        Agregar Método De Pago
+        Agregar Categoria
       </Button>
       <Table
-        dataSource={pagos}
+        dataSource={categorias}
         columns={columns}
         pagination={{ pageSize: 5 }}
         rowKey="key"
@@ -133,11 +171,12 @@ export const Categorias = () => {
           </Button>,
         ]}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form form={form} initialValues={desc} layout="vertical" onFinish={onFinish}>
           <Row gutter={10}>
             <Col xs={24} sm={24} md={24}>
               <Form.Item
-                name="descripcion"
+                
+                
                 label="Descripción"
                 rules={[
                   {
@@ -146,7 +185,12 @@ export const Categorias = () => {
                   },
                 ]}
               >
-                <Input onChange={(e) => setDesc(e.target.value)} value={desc} />
+                <Input 
+                
+                value={desc} 
+                onChange={(e) => {setDesc(e.target.value)
+                }} 
+                 />
               </Form.Item>
             </Col>
           </Row>

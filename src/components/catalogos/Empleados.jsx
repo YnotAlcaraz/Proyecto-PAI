@@ -31,6 +31,9 @@ export const Empleados = () => {
   const [rfc, setRfc] = useState();
   const [sexo, setSexo] = useState();
 
+
+  const [form] = Form.useForm();
+
   useEffect(() => {
     axios
       .get(url)
@@ -38,10 +41,23 @@ export const Empleados = () => {
         setEmpleados(res.data);
       })
       .catch((err) => console.error(err));
+
+      form.setFieldValue({
+        apellido_materno: apellidoMaterno,
+        apellido_paterno: apellidoPaterno,
+        curp: curp,
+        fecha_ini: fechaIni,
+        fecha_nac: fechaNac,
+        no_tel: noTel,
+        nombre: nombres,
+        rfc: rfc,
+        sexo: sexo,
+      })
+
   }, [isLoading]);
 
   const onFinish = () => {
-    if (fechaIni) {
+    if (apellidoMaterno && apellidoPaterno && curp && fechaIni && fechaNac && noTel && nombres && rfc && sexo) {
       //POST
       if (!isEdit) {
         setIsLoading(true);
@@ -58,8 +74,10 @@ export const Empleados = () => {
             sexo: sexo,
           })
           .then(() => {
+            
             setIsLoading(false);
             setVisible(false);
+
           })
           .catch((err) => console.error(err));
       } else {
@@ -80,6 +98,12 @@ export const Empleados = () => {
           .then(() => {
             setIsLoading(false);
             setVisible(false);
+            axios
+            .get(url)
+            .then((res) => {
+              setEmpleados(res.data);
+             })
+            // window.location.reload();
           });
       }
     } else {
@@ -103,7 +127,7 @@ export const Empleados = () => {
     axios
       .get(`${url}/${id}`)
       .then((res) => {
-        setEmpleado(res.data);
+        
         setApellidoMaterno(res.data.apellido_materno);
         setApellidoPaterno(res.data.apellido_paterno);
         setCurp(res.data.curp);
@@ -114,6 +138,8 @@ export const Empleados = () => {
         setNombres(res.data.nombre);
         setRfc(res.data.rfc);
         setSexo(res.data.sexo);
+        setEmpleado(res.data);
+        
       })
       .catch((err) => console.error(err));
   };
@@ -271,14 +297,16 @@ export const Empleados = () => {
           </Button>,
           <Button key="save" type="primary" onClick={() => onFinish()}>
             Guardar
+            
           </Button>,
         ]}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form form={form}  layout="vertical" onFinish={onFinish}>
           <Row gutter={10}>
             <Col xs={24} sm={24} md={8}>
               <Form.Item
-                name="nombre"
+                
+                
                 label="Nombre(s)"
                 rules={[
                   {
@@ -288,13 +316,16 @@ export const Empleados = () => {
                 ]}
               >
                 <Input
+                  value= {nombres}
                   onChange={(e) => setNombres(e.target.value)}
-                  value={nombres}
+                  
+                  
                 />
               </Form.Item>
               <Form.Item
-                name="apellido_paterno"
+                
                 label="Apellido Paterno"
+                
                 rules={[
                   {
                     required: true,
@@ -303,12 +334,13 @@ export const Empleados = () => {
                 ]}
               >
                 <Input
+                  
                   onChange={(e) => setApellidoPaterno(e.target.value)}
                   value={apellidoPaterno}
                 />
               </Form.Item>
               <Form.Item
-                name="apellido_materno"
+                
                 label="Apellido Materno"
                 rules={[
                   {
@@ -325,7 +357,7 @@ export const Empleados = () => {
             </Col>
             <Col xs={24} sm={24} md={8}>
               <Form.Item
-                name="sexo"
+                
                 label="Sexo"
                 rules={[
                   {
@@ -346,7 +378,7 @@ export const Empleados = () => {
                 />
               </Form.Item>
               <Form.Item
-                name="curp"
+                
                 label="CURP"
                 rules={[
                   {
@@ -358,7 +390,7 @@ export const Empleados = () => {
                 <Input onChange={(e) => setCurp(e.target.value)} value={curp} />
               </Form.Item>
               <Form.Item
-                name="fecha_nac"
+                
                 label="Fecha de Nacimiento"
                 rules={[
                   {
@@ -369,13 +401,13 @@ export const Empleados = () => {
               >
                 <DatePicker
                   onChange={(e) => setFechaNac(e.format("DD/MM/YYYY"))}
-                  value={fechaNac}
+                  value={empleado.fechaNac}
                 />
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={8}>
               <Form.Item
-                name="rfc"
+                
                 label="RFC"
                 rules={[
                   {
@@ -387,7 +419,7 @@ export const Empleados = () => {
                 <Input onChange={(e) => setRfc(e.target.value)} value={rfc} />
               </Form.Item>
               <Form.Item
-                name="no_tel"
+                
                 label="Número de Teléfono"
                 rules={[
                   {
@@ -402,7 +434,7 @@ export const Empleados = () => {
                 />
               </Form.Item>
               <Form.Item
-                name="fecha_ini"
+                
                 label="Fecha de Inicio"
                 rules={[
                   {
@@ -413,7 +445,7 @@ export const Empleados = () => {
               >
                 <DatePicker
                   onChange={(e) => setFechaIni(e.format("DD/MM/YYYY"))}
-                  value={fechaIni}
+                  value={empleado.fechaIni}
                 />
               </Form.Item>
             </Col>

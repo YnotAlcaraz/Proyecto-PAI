@@ -7,9 +7,13 @@ export const Pagos = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [pagos, setPagos] = useState([]);
+  const [pago, setPago] = useState({});
   const [visible, setVisible] = useState(false);
   const [iden, setIden] = useState();
   const [desc, setDesc] = useState();
+
+
+  const [form] = Form.useForm();
 
   useEffect(() => {
     axios
@@ -18,6 +22,10 @@ export const Pagos = () => {
         setPagos(res.data);
       })
       .catch((err) => console.error(err));
+
+      form.setFieldValue({
+        descripcion: desc,
+      })
   }, [isLoading]);
 
   const onFinish = () => {
@@ -34,6 +42,23 @@ export const Pagos = () => {
           .catch((err) => console.error(err));
       } else {
         //PATCH
+        axios
+        .patch(`${url}/${pago.id}`, {
+         descripcion: desc,
+         id: iden,
+        })
+        .then(() => {
+          setIsLoading(false);
+          setVisible(false);
+          axios
+          .get(url)
+          .then((res) => {
+            setPagos(res.data);
+           })
+
+          // window.location.reload();
+        });
+        
       }
     } else {
       alert("Por Favor Llene Los Campos Requeridos");
@@ -53,13 +78,21 @@ export const Pagos = () => {
   const onEdit = (id) => {
     setIsEdit(true);
     setVisible(true);
+    axios
+      .get(`${url}/${id}`)
+      .then((res) => {
+        
+        setDesc(res.data.descripcion);
+        setIden(res.data.id);
+        setPago(res.data);
+        
+      })
+      .catch((err) => console.error(err));
   };
 
   const onCancel = () => {
     setVisible(false);
     setIsEdit(false);
-    setIden();
-    setDesc();
   };
 
   const columns = [
@@ -133,11 +166,11 @@ export const Pagos = () => {
           </Button>,
         ]}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form form={form} initialValues={desc} layout="vertical" onFinish={onFinish}>
           <Row gutter={10}>
             <Col xs={24} sm={24} md={24}>
               <Form.Item
-                name="descripcion"
+                
                 label="Descripción"
                 rules={[
                   {
