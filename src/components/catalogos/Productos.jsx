@@ -15,6 +15,7 @@ import axios from "axios";
 
 export const Productos = () => {
   const url = "http://localhost:3000/productos";
+  const urlCategorias = "http://localhost:3000/categorias"
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [productos, setProductos] = useState([]);
@@ -26,6 +27,8 @@ export const Productos = () => {
   const [img, setImg] = useState();
   const [precio, setPrecio] = useState();
   const [cantidad, setCantidad] = useState(0);
+  const [categoria, setCategoria] = useState();
+  const [categorias, setCategorias] = useState();
 
   useEffect(() => {
     axios
@@ -34,22 +37,35 @@ export const Productos = () => {
         setProductos(res.data);
       })
       .catch((err) => console.error(err));
+    axios
+      .get(urlCategorias)
+      .then((res) => {
+        setCategorias(res.data);
+      })
+      .catch((err) => console.error(err));
   }, [isLoading]);
 
+  const optionsCategorias = categorias?.map(x => {
+    return {
+      value: x.id,
+      label: x.descripcion
+    }
+  });
+
   const onFinish = () => {
-    if (iden && codBarras && nomb && desc && img && precio) {
+    if (codBarras && nomb && desc && img && precio) {
       //POST
       if (!isEdit) {
         setIsLoading(true);
         axios
           .post(url, {
-            id: iden,
             codigo_de_barras: codBarras,
             nombre: nomb,
             descripcion: desc,
             imagen_del_producto: img,
             precio_de_venta: precio,
-            cantidad: cantidad
+            cantidad: cantidad,
+            categoria: categoria,
           })
           .then(() => {
             setIsLoading(false);
@@ -64,6 +80,7 @@ export const Productos = () => {
           descripcion: desc,
           imagen_del_producto: img,
           precio_de_venta: precio,
+          categoria: categoria,
         });
         setIsLoading(false);
         setVisible(false);
@@ -93,6 +110,7 @@ export const Productos = () => {
       setDesc(res.data.descripcion);
       setImg(res.data.imagen_del_producto);
       setPrecio(res.data.precio_de_venta);
+      setCategoria(res.data.categoria);
     });
   };
 
@@ -129,6 +147,12 @@ export const Productos = () => {
       render: (text, record) => (
         <img src={text} alt={record.nombre} style={{ maxHeight: "100px" }} />
       ),
+    },
+    {
+      title: "Categoría",
+      dataIndex: "categoria",
+      key: "categoria",
+      render: (val) => categorias?.find(e => e.id === val)?.descripcion,
     },
     {
       title: "Precio De Venta",
@@ -174,6 +198,40 @@ export const Productos = () => {
     <>
       <h1>Inventario</h1>
       <hr />
+      <Form
+        layout="vertical"
+      >
+        <Row gutter={10}>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Código de Barras"
+            >
+              <Input.Search
+                placeholder="Código de Barras"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Nombre"
+            >
+              <Input.Search
+                placeholder="Nombre"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Categoría"
+            >
+              <Select
+                placeholder="Categoría"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+
       <Button
         type="primary"
         onClick={() => setVisible(true)}
@@ -199,18 +257,6 @@ export const Productos = () => {
         <Form layout="vertical" onFinish={onFinish}>
           <Row gutter={10}>
             <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                name="id"
-                label="Id"
-                rules={[
-                  {
-                    required: true,
-                    message: "Este Campo Es Requerido",
-                  },
-                ]}
-              >
-                <Input onChange={(e) => setIden(e.target.value)} value={iden} />
-              </Form.Item>
               <Form.Item
                 name="codigo_de_barras"
                 label="Código De Barras"
@@ -238,8 +284,6 @@ export const Productos = () => {
               >
                 <Input onChange={(e) => setNomb(e.target.value)} value={nomb} />
               </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="descripcion"
                 label="Descripción"
@@ -264,13 +308,15 @@ export const Productos = () => {
               >
                 <Input onChange={(e) => setImg(e.target.value)} value={img} />
               </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="precio_de_venta"
                 label="Precio De Venta"
                 rules={[
                   {
                     required: true,
-                    message: "Este Campo Es Obligatorio",
+                    message: "Este Campo Es Requerido",
                   },
                 ]}
               >
@@ -284,10 +330,24 @@ export const Productos = () => {
                 label="Cantidad En Stock"
                 rules={[{
                   required: true,
-                  message: "Este Campo Es Obligatorio"
+                  message: "Este Campo Es Requerido"
                 }]}
               >
                 <Input onChange={(e) => setCantidad(e.target.value)} value={cantidad}/>
+              </Form.Item>
+              <Form.Item
+                name="categoria"
+                label="Categoría"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
+              >
+                <Select 
+                  options={optionsCategorias}
+                  onChange={e => setCategoria(e)}
+                  value={categoria}
+                />
               </Form.Item>
             </Col>
           </Row>

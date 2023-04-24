@@ -145,10 +145,7 @@ export const Proveedores = () => {
       title: "Método De Pago",
       dataIndex: "forma_pago",
       key: "forma_pago",
-      render: (val) => {
-        const _valStr = val?.toString();
-        return pagos.find((e) => e.id === _valStr)?.descripcion;
-      },
+      render: (val) => pagos.find((e) => e.id === val)?.descripcion,
     },
     {
       title: "Acciones",
@@ -181,8 +178,32 @@ export const Proveedores = () => {
 
   return (
     <>
-      <h1>Catálogo De Productos</h1>
+      <h1>Catálogo De Proveedores</h1>
       <hr />
+      <Form
+        layout="vertical"
+      >
+        <Row gutter={10}>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Nombre"
+            >
+              <Input.Search
+                placeholder="Nombre"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Nombre de la Empresa"
+            >
+              <Input.Search
+                placeholder="Nombre de la Empresa"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
       <Button
         type="primary"
         onClick={() => setVisible(true)}
@@ -213,18 +234,6 @@ export const Proveedores = () => {
         <Form layout="vertical" onFinish={onFinish}>
           <Row gutter={10}>
             <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                name="id"
-                label="Id"
-                rules={[
-                  {
-                    required: true,
-                    message: "Este Campo Es Requerido",
-                  },
-                ]}
-              >
-                <Input onChange={(e) => setIden(e.target.value)} value={iden} />
-              </Form.Item>
               <Form.Item
                 name="nombre"
                 label="Nombre"
@@ -264,8 +273,6 @@ export const Proveedores = () => {
               >
                 <Input onChange={(e) => setCorr(e.target.value)} value={corr} />
               </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="tel"
                 label="Número De Teléfono"
@@ -278,6 +285,8 @@ export const Proveedores = () => {
               >
                 <Input onChange={(e) => setTel(e.target.value)} value={tel} />
               </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="direccion"
                 label="Dirección"
@@ -293,6 +302,12 @@ export const Proveedores = () => {
               <Form.Item
                 name="direccion_facturacion"
                 label="Dirección De Facturación"
+                rules={[
+                  {
+                    required: true,
+                    message: "Este Campo Es Requerido",
+                  },
+                ]}
               >
                 <Input
                   onChange={(e) => setDirFac(e.target.value)}

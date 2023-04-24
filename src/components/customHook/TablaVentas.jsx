@@ -36,6 +36,9 @@ function TablaVentas() {
       title: "Total de venta",
       dataIndex: "totalVenta",
       key: "totalVenta",
+      render: (val) => {
+        return `$${val}`;
+      },
     },
     {
       title: "Producto",

@@ -52,7 +52,6 @@ export const Empleados = () => {
             curp: curp,
             fecha_ini: fechaIni,
             fecha_nac: fechaNac,
-            id: iden,
             no_tel: noTel,
             nombre: nombres,
             rfc: rfc,
@@ -212,6 +211,41 @@ export const Empleados = () => {
     <>
       <h1>Catálogo De Empleados</h1>
       <hr />
+
+      <Form
+        layout="vertical"
+      >
+        <Row gutter={10}>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Nombre"
+            >
+              <Input.Search
+                placeholder="Nombre"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Apellido"
+            >
+              <Input.Search
+                placeholder="Apellido Paterno"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={4} md={6}>
+            <Form.Item
+              label="Filtrar por Sexo"
+            >
+              <Select
+                placeholder="Sexo"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+
       <Button
         type="primary"
         onClick={() => setVisible(true)}
@@ -241,22 +275,6 @@ export const Empleados = () => {
         ]}
       >
         <Form layout="vertical" onFinish={onFinish}>
-          <Row gutter={10}>
-            <Col xs={24} sm={24} md={2}>
-              <Form.Item
-                name="id"
-                label="Id"
-                rules={[
-                  {
-                    required: true,
-                    message: "Este Campo Es Requerido",
-                  },
-                ]}
-              >
-                <Input onChange={(e) => setIden(e.target.value)} value={iden} />
-              </Form.Item>
-            </Col>
-          </Row>
           <Row gutter={10}>
             <Col xs={24} sm={24} md={8}>
               <Form.Item

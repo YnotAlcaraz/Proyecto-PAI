@@ -5,6 +5,7 @@ import {
   CreditCardOutlined,
   TeamOutlined,
   TableOutlined,
+  GroupOutlined,
   ScheduleOutlined,
   ContactsOutlined,
 } from "@ant-design/icons/lib/icons";
@@ -15,8 +16,14 @@ import {
   Pagos,
   Productos,
   Proveedores,
+  Categorias
 } from "./components/catalogos";
-import { Inventario, Pedidos, Ventas } from "./components/mantenimientos";
+import {
+  Inventario,
+  MantVentas,
+  Pedidos,
+  Ventas
+} from "./components/mantenimientos";
 import { Dashboard } from "./components/Dashboard";
 import { useState } from "react";
 import VentasH from "./components/catalogos/Ventas";
@@ -35,37 +42,52 @@ const items = [
   {
     label: "VENTAS",
     icon: <FundOutlined />,
+    key: "/mantVentas"
+  },
+  /* {
+    label: "VENTAS",
+    icon: <FundOutlined />,
     key: "/ventas",
   },
   {
     label: "HISTORIAL VENTAS",
     icon: <FundOutlined />,
     key: "/historialVentas",
-  },
+  }, */
   {
     label: "PEDIDOS",
     icon: <ScheduleOutlined />,
     key: "/pedidos",
   },
   {
-    label: "EMPLEADOS",
-    icon: <TeamOutlined />,
-    key: "/empleados",
-  },
-  {
-    label: "PAGOS",
-    icon: <CreditCardOutlined />,
-    key: "/pagos",
-  },
- /*  {
-    label: "PRODUCTOS",
-    icon: <ProfileOutlined />,
-    key: "productos",
-  }, */
-  {
-    label: "PROVEEDORES",
-    icon: <ContactsOutlined />,
-    key: "proveedores", 
+    label: 'CATALOGOS',
+    children: [
+      {
+        label: "EMPLEADOS",
+        icon: <TeamOutlined />,
+        key: "/empleados",
+      },
+      {
+        label: "PAGOS",
+        icon: <CreditCardOutlined />,
+        key: "/pagos",
+      },
+      /* {
+        label: "PRODUCTOS",
+        icon: <ProfileOutlined />,
+        key: "/productos",
+      }, */
+      {
+        label: "CATEGORÍAS",
+        icon: <GroupOutlined/>,
+        key: "/categorias"
+      },
+      {
+        label: "PROVEEDORES",
+        icon: <ContactsOutlined />,
+        key: "/proveedores", 
+      },
+    ],
   },
 ];
 
@@ -77,12 +99,14 @@ export const Sidebar = () => {
         <Routes>
           <Route path="/inventario" element={<Inventario />} />
           <Route path="/pedidos" element={<Pedidos />} />
+          <Route path="/mantVentas" element={<MantVentas />} />
           <Route path="/ventas" element={<Ventas />} />
           <Route path="/productos" element={<Productos />} />
           <Route path="/proveedores" element={<Proveedores />} />
           <Route path="/pagos" element={<Pagos />} />
           <Route path="/empleados" element={<Empleados />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/categorias" element={<Categorias />} />
           <Route path="/historialVentas" element={<VentasH />} />
           <Route path="/" element={<Navigate to="dashboard" />} />
         </Routes>
