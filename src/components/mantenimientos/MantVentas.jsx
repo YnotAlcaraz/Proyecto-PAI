@@ -17,14 +17,17 @@ import axios from "axios";
 
 export const MantVentas = () => {
     const [form] = Form.useForm();
+    const [formGenerador] = Form.useForm();
+    const [formReporte] = Form.useForm();
     const urlVentas = 'http://localhost:3000/ventas';
     const urlVentasProductos = 'http://localhost:3000/ventas_productos';
     const urlProductos = 'http://localhost:3000/productos';
     const urlCategorias = 'http://localhost:3000/categorias';
     const [ventas, setVentas] = useState([]);
-    const [venta, setVenta] = useState({});
     const [ventasProductos, setVentasProductos] = useState([]);
     const [ventaProducto, setVentaProducto] = useState();
+    const [ventaProductoSort, setVentaProductoSort] = useState([]);
+    const [ventaProductoMes, setVentaProductoMes] = useState([]);
     const [idVenta, setIdVenta] = useState();
     const [productos, setProductos] = useState([]);
     const [productosFiltered, setProductosFiltered] = useState([]);
@@ -33,7 +36,10 @@ export const MantVentas = () => {
     const [visible, setVisible] = useState(false);
     const [visibleProductos, setVisibleProductos] = useState(false);
     const [visibleReporte, setVisibleReporte] = useState(false);
+    const [visibleReporteGenerado, setVisibleReporteGenerado] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
+    const [mes, setMes] = useState(1);
+    let conter = 0;
 
     useEffect(() => {
       axios.get(urlVentas)
@@ -52,6 +58,7 @@ export const MantVentas = () => {
       .then(res => {
         setCategorias(res.data);
       }).catch(err => console.err(err));
+      conter = 0;
     }, [isLoading]);
 
     const fetchData = () => {
@@ -59,7 +66,6 @@ export const MantVentas = () => {
         .then(res => {
             const _ventasProductos = res.data;
             setVentaProducto(_ventasProductos?.filter((e) => e.idVenta === idVenta));
-            console.log(_ventasProductos?.filter((e) => e.idVenta === idVenta));
       }).catch(err => console.error(err));
 
     }
@@ -91,7 +97,9 @@ export const MantVentas = () => {
         if (!isEdit) {
             setIsLoading(true);
             const fecha = new Date().toLocaleDateString('en-GB');
-            axios.post(urlVentas, { fecha_venta: fecha }).then(() => {
+            const fechaMes = new Date();
+            const month = fechaMes.getMonth()+1;
+            axios.post(urlVentas, { fecha_venta: fecha, mes: month }).then(() => {
                 setIsLoading(false);
             }).catch(err => console.error(err));
         }
@@ -110,6 +118,21 @@ export const MantVentas = () => {
             label: x.nombre,
         }
     });
+
+    const mesOptions = [
+        { value: 1, label: 'Enero'},
+        { value: 2, label: 'Febrero'},
+        { value: 3, label: 'Marzo'},
+        { value: 4, label: 'Abril'},
+        { value: 5, label: 'Mayo'},
+        { value: 6, label: 'Junio'},
+        { value: 7, label: 'Julio'},
+        { value: 8, label: 'Agosto'},
+        { value: 9, label: 'Septiembre'},
+        { value: 10, label: 'Octubre'},
+        { value: 11, label: 'Noviembre'},
+        { value: 12, label: 'Diciembre'},
+    ]
 
     const onDelete = async (id) => {
         const _ventasProductos = ventasProductos.filter((e) => e.idVenta === id);
@@ -135,7 +158,9 @@ export const MantVentas = () => {
         setVisible(false);
         setVisibleProductos(false);
         setVisibleReporte(false);
+        setVisibleReporteGenerado(false);
         setIdVenta();
+        conter = 0;
     }
 
     const mostrarProductos = (id) => {
@@ -143,6 +168,34 @@ export const MantVentas = () => {
         setVisibleProductos(true);
         setVentaProducto(ventasProductos?.filter((e) => e.idVenta === id));
     }
+
+    const onGenerarReporte = () => {
+        setVisibleReporte(false);
+        setVisibleReporteGenerado(true);
+        formGenerador.resetFields();
+        const fecha = new Date().toLocaleDateString('en-GB');
+        const current = new Date();
+        const hora = `${current.getHours()}:${current.getMinutes()}`
+        ventasProductos.sort((a,b) => b.cantidad - a.cantidad);
+        formReporte.setFieldsValue({ fecha: fecha});
+        formReporte.setFieldsValue({ hora: hora });
+        const _ventasMes = ventas.filter((e) => e.mes === mes);
+        let _ventasProductosDelMes = []
+        let montoMensual = 0;
+        _ventasMes?.map((x) => {
+            const _ventasProductos = ventasProductos.filter((e) => e.idVenta === x.id);
+            _ventasProductosDelMes=[..._ventasProductosDelMes, ..._ventasProductos]
+            _ventasProductos.map((y) => {
+                const _cantidad = y.cantidad;
+                const _precio = productos.find((e) => e.id === y.id_del_producto)?.precio_de_venta;
+                const _monto = _cantidad * _precio;
+                montoMensual = montoMensual + _monto;
+            })
+        })
+        setVentaProductoMes(_ventasProductosDelMes)
+        formReporte.setFieldsValue({ monto_total_del_mes: montoMensual });
+    }
+
 
     const columns = [
         {
@@ -305,28 +358,37 @@ export const MantVentas = () => {
     ]
 
     const columns4 = [
-        {
+        /* {
             title: 'No.',
             dataIndex: "noRow",
             key: "noRow",
             width: 50,
-        },
+            render: (val) => {
+                conter = conter + 1;
+                return `${conter}`
+            }
+        }, */
         {
             title: "Nombre del Producto",
-            dataIndex: "productoNombre",
+            dataIndex: "nombre_del_producto",
             key: "productoNombre",
+            render: (val) => productos.find((e) => e.id === val)?.nombre,
         },
         {
             title: "Cantidad Vendida",
-            dataIndex: "cantidadVendida",
+            dataIndex: "cantidad",
             key: "cantidadVendida",
         },
         {
             title: "Monto Total",
-            dataIndex: "montoTotal",
+            dataIndex: "id_del_producto",
             key: "montoTotal",
             render: (val) => {
-                return `$ ${val}`
+                const _costo = productos.find((e) => e.id === val)?.precio_de_venta;
+                const _productosVenta = ventaProductoMes;
+                const _productoCantidad = _productosVenta?.find((e) => e.id_del_producto === val)?.cantidad;
+                const _monto = _costo * _productoCantidad;
+                return `$${_monto}` || '';
             }
         },
     ]
@@ -411,12 +473,6 @@ export const MantVentas = () => {
                             <Form.Item
                                 name="cantidad"
                                 label="Cantidad"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Este Campo Es Requerido"
-                                    }
-                                ]}
                             >
                                 <InputNumber
                                     style={{ width: '100%' }}
@@ -480,24 +536,23 @@ export const MantVentas = () => {
                 <Button key="cancel" onClick={onCancel}>
                     Cerrar
                 </Button>,
-                <Button key="save" type="primary" onClick={() => onFinish()}>
-                    Exportar
-                </Button>,
             ]}
         >
             <Form
                 layout="vertical"
-                onFinish={onFinish}
+                onFinish={onGenerarReporte}
+                form={formGenerador}
+                initialValues={{mes: 1}}
             >   
                 <Row gutter={10}>
                     <Col xs={24} sm={24} md={8}>
                         <Form.Item
+                            name="mes"
                             label="Mes"
                         >
-                            <Input
-                                defaultValue="Marzo"
-                                disabled
-                                style={{ fontWeight: 600 }}
+                            <Select
+                                options={mesOptions}
+                                onChange={(value) => setMes(value)}
                             />
                         </Form.Item>
                     </Col>
@@ -514,54 +569,80 @@ export const MantVentas = () => {
                     </Col>
                     <Col xs={24} sm={24} md={8}>
                         <Form.Item>
-                            <Button key="agregar" style={{marginTop: "30px"}}>
+                            <Button
+                                key="agregar"
+                                style={{marginTop: "30px"}}
+                                onClick={onGenerarReporte}
+                            >
                                 Generar Reporte
                             </Button>
                         </Form.Item>
                     </Col>
                 </Row>
-                <hr />
-                <h4 style={{ textAlign: "center" }}>INSTITUTO TECNOLÓGICO DE MEXICALI</h4>
-                <p style={{ textAlign: "center" }}>Proyecto de Administración de Inventario</p>
-                <br />
-                <h5>Reporte de Ventas En El Mes de Marzo</h5>
-                <br />
+            </Form>
+        </Modal>
+        <Modal
+            title="Generar Reporte de Ventas"
+            open={visibleReporteGenerado}
+            onCancel={onCancel}
+            width={"90% "}
+            footer={[
+                <Button key="cancel" onClick={onCancel}>
+                    Cerrar
+                </Button>,
+                <Button key="save" type="primary" onClick={onCancel}>
+                    Exportar
+                </Button>
+            ]}
+        >
+            <h4 style={{ textAlign: "center" }}>INSTITUTO TECNOLÓGICO DE MEXICALI</h4>
+            <p style={{ textAlign: "center" }}>Proyecto de Administración de Inventario</p>
+            <br />
+            <h5>Reporte De Ventas En El Mes De {
+                mesOptions.map((x) => {
+                    if (x.value === mes) {
+                        if (x.value) {
+                            return x.label;
+                        } else {
+                            return 'Enero'
+                        }
+                    }
+                })
+            }</h5>
+            <br />
+            <Form form={formReporte}>
                 <Row gutter={10}>
                     <Col xs={24} sm={24} md={8}>
                         <Form.Item
+                            name="fecha"
                             label="Fecha"
                         >
-                            <Input
-                                defaultValue="19/04/2023"
-                                style={{ fontWeight: 600 }}
-                            />
+                            <Input disabled/>
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={24} md={8}>
                         <Form.Item
+                            name="hora"
                             label="Hora"
                         >
-                            <Input
-                                defaultValue="14:02:02"
-                                style={{ fontWeight: 600 }}
-                            />
+                            <Input disabled/>
                         </Form.Item>
                     </Col>
                 </Row>
                 <Row gutter={10}>
                     <Col xs={24} sm={24} md={8}>
                         <Form.Item
+                            name="monto_total_del_mes"
                             label="Monto Total Del Mes"
                         >
-                            <Input
-
-                            />
+                            <Input disabled/>
                         </Form.Item>
                     </Col>
                 </Row>
             </Form>
             <Table
                 columns={columns4}
+                dataSource={ventaProductoMes}
             />
         </Modal>
     </>
