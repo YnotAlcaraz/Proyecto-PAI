@@ -31,6 +31,7 @@ export const MantVentas = () => {
     const [categorias, setCategorias] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [visibleProductos, setVisibleProductos] = useState(false);
     const [visibleReporte, setVisibleReporte] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
 
@@ -89,7 +90,8 @@ export const MantVentas = () => {
     const onFinish = () => {
         if (!isEdit) {
             setIsLoading(true);
-            axios.post(urlVentas, { fecha_venta: 'fechaVentaTest' }).then(() => {
+            const fecha = new Date().toLocaleDateString('en-GB');
+            axios.post(urlVentas, { fecha_venta: fecha }).then(() => {
                 setIsLoading(false);
             }).catch(err => console.error(err));
         }
@@ -109,11 +111,15 @@ export const MantVentas = () => {
         }
     });
 
-    const onDelete = (id) => {
+    const onDelete = async (id) => {
+        const _ventasProductos = ventasProductos.filter((e) => e.idVenta === id);
         setIsLoading(true);
         axios.delete(`${urlVentas}/${id}`).then(() => {
             setIsLoading(false);
         }).catch(err => console.error(err));
+        _ventasProductos.map((x) => {
+            axios.delete(`${urlVentasProductos}/${x.id}`);
+        });
     }
 
     const onEdit = (id) => {
@@ -127,8 +133,15 @@ export const MantVentas = () => {
     const onCancel = () => {
         setIsEdit(false);
         setVisible(false);
+        setVisibleProductos(false);
         setVisibleReporte(false);
         setIdVenta();
+    }
+
+    const mostrarProductos = (id) => {
+        setIdVenta(id);
+        setVisibleProductos(true);
+        setVentaProducto(ventasProductos?.filter((e) => e.idVenta === id));
     }
 
     const columns = [
@@ -163,19 +176,17 @@ export const MantVentas = () => {
             title: "Productos",
             dataIndex: "id",
             key: "productos",
-            render: (val) => {
-                const _productosVenta = ventasProductos.filter((e) => e.idVenta === val);
-                console.log(_productosVenta);
-                {
-                    _productosVenta.map((x) => {
-                        const _nombre = productos.find((e) => e.id === x.id_del_producto)?.nombre;
-                        const _cantidad = x.cantidad;
-                        return (
-                            <p>{_nombre} - Cantidad: {_cantidad}</p>
-                        )
-                    });
-                }
-            },
+            render: (key, record) => (
+                <>
+                  <Button
+                    type="primary"
+                    style={{ marginRight: 16 }}
+                    onClick={() => mostrarProductos(key)}
+                  >
+                    Ver Productos
+                  </Button>
+                </>
+              ),
         },
         {
             title: "Acciones",
@@ -186,10 +197,10 @@ export const MantVentas = () => {
               <>
                 <Button
                   type="primary"
-                  style={{ marginRight: 16 }}
+                  style={{ marginRight: 16, marginTop: 5, width: '100%' }}
                   onClick={() => onEdit(key)}
                 >
-                  Editar
+                  Agregar Productos
                 </Button>
                 <Popconfirm
                   title="¿Deseas Eliminar Esta Venta?"
@@ -197,8 +208,8 @@ export const MantVentas = () => {
                   okText="Sí"
                   cancelText="No"
                 >
-                  <Button type="danger" style={{ marginRight: 16 }}>
-                    Eliminar
+                  <Button type="danger" style={{ marginRight: 16,  marginTop: 5, width: '100%'}}>
+                    Eliminar Venta
                   </Button>
                 </Popconfirm>
               </>
@@ -260,6 +271,41 @@ export const MantVentas = () => {
 
     const columns3 = [
         {
+            title: "Producto",
+            dataIndex: "id_del_producto",
+            key: "producto",
+            render: (val) => productos.find((e) => e.id === val)?.nombre,
+        },
+        {
+            title: "Precio Individual",
+            dataIndex: "id_del_producto",
+            key: "precio_individual",
+            render: (val) => {
+                const _precio = productos.find((e) => e.id === val)?.precio_de_venta;
+                return `$${_precio}` || '';
+            },
+        },
+        {
+            title: "Cantidad",
+            dataIndex: "cantidad",
+            key: "cantidad",
+        },
+        {
+            title: "Monto Total",
+            dataIndex: "id_del_producto",
+            key: "monto_total",
+            render: (val) => {
+                const _costo = productos.find((e) => e.id === val)?.precio_de_venta;
+                const _productosVenta = ventasProductos.filter((e) => e.idVenta === idVenta);
+                const _productoCantidad = _productosVenta?.find((e) => e.id_del_producto === val)?.cantidad;
+                const _monto = _costo * _productoCantidad;
+                return `$${_monto}` || '';
+            }
+        },
+    ]
+
+    const columns4 = [
+        {
             title: 'No.',
             dataIndex: "noRow",
             key: "noRow",
@@ -314,7 +360,7 @@ export const MantVentas = () => {
             width={"75%"}
             footer={[
                 <Button key="cancel" onClick={onCancel}>
-                    Cancelar
+                    Cerrar
                 </Button>,
             ]}
         >
@@ -410,6 +456,22 @@ export const MantVentas = () => {
             />
         </Modal>
         <Modal
+            title="Productos de la Venta"
+            open={visibleProductos}
+            onCancel={onCancel}
+            width={"75%"}
+            footer={[
+                <Button key="cancel" onClick={onCancel}>
+                    Cerrar
+                </Button>
+            ]}
+        >
+            <Table
+                columns={columns3}
+                dataSource={ventaProducto}
+            />
+        </Modal>
+        <Modal
             title="Generar Reporte de Ventas"
             open={visibleReporte}
             onCancel={onCancel}
@@ -499,7 +561,7 @@ export const MantVentas = () => {
                 </Row>
             </Form>
             <Table
-                columns={columns3}
+                columns={columns4}
             />
         </Modal>
     </>
