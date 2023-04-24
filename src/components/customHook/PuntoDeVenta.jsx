@@ -4,7 +4,7 @@ import axios from "axios";
 
 const { Text } = Typography;
 
-export const Ventas = () => {
+const PuntoDeVenta = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [cartItems, setCartItems] = useState([]);
@@ -92,6 +92,7 @@ export const Ventas = () => {
 
     try {
       const response = await axios.post("http://localhost:3000/ventas", venta);
+      console.log(response.data);
       setCartItems([]);
       setTotalVenta(0);
       message.success("Venta realizada exitosamente");
@@ -103,8 +104,6 @@ export const Ventas = () => {
 
   return (
     <div>
-      <h1>Registro De Ventas</h1>
-      <hr />
       <div style={{ marginBottom: "16px" }}>
         <Input
           placeholder="Buscar producto"
@@ -185,3 +184,5 @@ export const Ventas = () => {
     </div>
   );
 };
+
+export default PuntoDeVenta;
