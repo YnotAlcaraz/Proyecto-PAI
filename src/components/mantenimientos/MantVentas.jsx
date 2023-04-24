@@ -38,7 +38,8 @@ export const MantVentas = () => {
     const [visibleReporte, setVisibleReporte] = useState(false);
     const [visibleReporteGenerado, setVisibleReporteGenerado] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
-    const [mes, setMes] = useState();
+    const [mes, setMes] = useState(1);
+    let conter = 0;
 
     useEffect(() => {
       axios.get(urlVentas)
@@ -57,6 +58,7 @@ export const MantVentas = () => {
       .then(res => {
         setCategorias(res.data);
       }).catch(err => console.err(err));
+      conter = 0;
     }, [isLoading]);
 
     const fetchData = () => {
@@ -64,7 +66,6 @@ export const MantVentas = () => {
         .then(res => {
             const _ventasProductos = res.data;
             setVentaProducto(_ventasProductos?.filter((e) => e.idVenta === idVenta));
-            console.log(_ventasProductos?.filter((e) => e.idVenta === idVenta));
       }).catch(err => console.error(err));
 
     }
@@ -96,7 +97,9 @@ export const MantVentas = () => {
         if (!isEdit) {
             setIsLoading(true);
             const fecha = new Date().toLocaleDateString('en-GB');
-            axios.post(urlVentas, { fecha_venta: fecha }).then(() => {
+            const fechaMes = new Date();
+            const month = fechaMes.getMonth()+1;
+            axios.post(urlVentas, { fecha_venta: fecha, mes: month }).then(() => {
                 setIsLoading(false);
             }).catch(err => console.error(err));
         }
@@ -157,6 +160,7 @@ export const MantVentas = () => {
         setVisibleReporte(false);
         setVisibleReporteGenerado(false);
         setIdVenta();
+        conter = 0;
     }
 
     const mostrarProductos = (id) => {
@@ -175,34 +179,21 @@ export const MantVentas = () => {
         ventasProductos.sort((a,b) => b.cantidad - a.cantidad);
         formReporte.setFieldsValue({ fecha: fecha});
         formReporte.setFieldsValue({ hora: hora });
-        const ventasProductosMerge = [];
-        ventasProductos.map((x) => {
-            console.log(x)
-            ventasProductos.map((y) => {
-                let z = {};
-                console.log(y);
-                if (x.id_del_producto === y.id_del_producto && x.idVenta != y.idVenta) {
-                    z.id_del_producto = x.id_del_producto,
-                    z.nombre_del_producto = x.nombre_del_producto,
-                    z.cantidad = x.cantidad + y.cantidad
-                    ventasProductosMerge.push(z)
-                } else {
-                    z.id_del_producto = x.id_del_producto,
-                    z.nombre_del_producto = x.nombre_del_producto,
-                    z.cantidad = x.cantidad,
-                    ventasProductosMerge.push(z);
-                }
-            });
-        });
-        
-        
-        
-        
-        
-        
-        
-        console.log(ventasProductosMerge);
-        
+        const _ventasMes = ventas.filter((e) => e.mes === mes);
+        let _ventasProductosDelMes = []
+        let montoMensual = 0;
+        _ventasMes?.map((x) => {
+            const _ventasProductos = ventasProductos.filter((e) => e.idVenta === x.id);
+            _ventasProductosDelMes=[..._ventasProductosDelMes, ..._ventasProductos]
+            _ventasProductos.map((y) => {
+                const _cantidad = y.cantidad;
+                const _precio = productos.find((e) => e.id === y.id_del_producto)?.precio_de_venta;
+                const _monto = _cantidad * _precio;
+                montoMensual = montoMensual + _monto;
+            })
+        })
+        setVentaProductoMes(_ventasProductosDelMes)
+        formReporte.setFieldsValue({ monto_total_del_mes: montoMensual });
     }
 
 
@@ -367,12 +358,16 @@ export const MantVentas = () => {
     ]
 
     const columns4 = [
-        {
+        /* {
             title: 'No.',
             dataIndex: "noRow",
             key: "noRow",
             width: 50,
-        },
+            render: (val) => {
+                conter = conter + 1;
+                return `${conter}`
+            }
+        }, */
         {
             title: "Nombre del Producto",
             dataIndex: "nombre_del_producto",
@@ -386,10 +381,14 @@ export const MantVentas = () => {
         },
         {
             title: "Monto Total",
-            dataIndex: "montoTotal",
+            dataIndex: "id_del_producto",
             key: "montoTotal",
             render: (val) => {
-                return `$ ${val}`
+                const _costo = productos.find((e) => e.id === val)?.precio_de_venta;
+                const _productosVenta = ventaProductoMes;
+                const _productoCantidad = _productosVenta?.find((e) => e.id_del_producto === val)?.cantidad;
+                const _monto = _costo * _productoCantidad;
+                return `$${_monto}` || '';
             }
         },
     ]
@@ -542,11 +541,13 @@ export const MantVentas = () => {
             <Form
                 layout="vertical"
                 onFinish={onGenerarReporte}
-                form={form}
+                form={formGenerador}
+                initialValues={{mes: 1}}
             >   
                 <Row gutter={10}>
                     <Col xs={24} sm={24} md={8}>
                         <Form.Item
+                            name="mes"
                             label="Mes"
                         >
                             <Select
@@ -600,7 +601,11 @@ export const MantVentas = () => {
             <h5>Reporte De Ventas En El Mes De {
                 mesOptions.map((x) => {
                     if (x.value === mes) {
-                        return x.label;
+                        if (x.value) {
+                            return x.label;
+                        } else {
+                            return 'Enero'
+                        }
                     }
                 })
             }</h5>
@@ -620,7 +625,7 @@ export const MantVentas = () => {
                             name="hora"
                             label="Hora"
                         >
-                            <Input />
+                            <Input disabled/>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -637,7 +642,7 @@ export const MantVentas = () => {
             </Form>
             <Table
                 columns={columns4}
-                dataSource={ventasProductos}
+                dataSource={ventaProductoMes}
             />
         </Modal>
     </>
