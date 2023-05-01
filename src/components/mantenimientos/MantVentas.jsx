@@ -16,6 +16,7 @@ import {
 import axios from "axios";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { muchoTexto } from "./imagen";
 
 export const MantVentas = () => {
     const [form] = Form.useForm();
@@ -400,19 +401,30 @@ export const MantVentas = () => {
             title: "Monto Total",
             dataIndex: "_datoMontoTotal",
             key: "montoTotal",
+            render: (val) => `$${val}`,
         },
     ]
 
     const generarPDF = ( ) => {
+        const nombreDelReporte = 'REPORTE DE VENTAS';
+        const fechaDelReporte = formReporte.getFieldValue('fecha');
+        const horaDelReporte = formReporte.getFieldValue('hora');
+        let img = muchoTexto;
+
         // Crear el objeto PDF
         const doc = new jsPDF();
-
+        doc.text(nombreDelReporte, 14, 16);
+        doc.text(fechaDelReporte, 14, 22);
+        doc.text(horaDelReporte, 14, 26);
+        doc.text('Eso TILIIIIIIIIIIN', 14,34)
+        doc.addImage(img, 'jpg', 10,78,12,15)
         // Crear la tabla en el PDF
         doc.autoTable({
           head: [columns4.map(column => column.title)],
           body: ventaProductoMesDatos.map((record) =>
             columns4.map((column) => record[column.dataIndex])
           ),
+          startY: 50,
         });
 
         // Devolver el objeto PDF
