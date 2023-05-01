@@ -406,7 +406,7 @@ export const MantVentas = () => {
     ]
 
     const generarPDF = ( ) => {
-        const nombreDelReporte = 'REPORTE DE VENTAS';
+        const nombreDelReporte = `Reporte De Ventas Del Mes De ${mesOptions.find((e) => e.value === mes)?.label}`;
         const fechaDelReporte = formReporte.getFieldValue('fecha');
         const horaDelReporte = formReporte.getFieldValue('hora');
         let img = muchoTexto;
