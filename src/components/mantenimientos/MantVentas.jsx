@@ -14,6 +14,8 @@ import {
   Spin,
 } from "antd";
 import axios from "axios";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 export const MantVentas = () => {
     const [form] = Form.useForm();
@@ -39,6 +41,7 @@ export const MantVentas = () => {
     const [visibleReporteGenerado, setVisibleReporteGenerado] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [mes, setMes] = useState(1);
+    const [ventaProductoMesDatos, setVentaProductoMesDatos] = useState([]);
     let conter = 0;
 
     useEffect(() => {
@@ -193,6 +196,21 @@ export const MantVentas = () => {
             })
         })
         setVentaProductoMes(_ventasProductosDelMes)
+        let _ventaProductoMesDatos = [];
+        _ventasProductosDelMes.map((venta) => {
+            const _datoNombre = productos.find((e) => e.id === venta.id_del_producto)?.nombre;
+            const _datoPrecio = productos.find((e) => e.id === venta.id_del_producto)?.precio_de_venta;
+            const _datoMontoTotal = _datoPrecio * venta.cantidad;
+            const objectDato = {
+                _datoNombre,
+                _datoCantidad: venta.cantidad,
+                _datoMontoTotal,
+            }
+            _ventaProductoMesDatos = [..._ventaProductoMesDatos, objectDato]
+
+        });
+        console.log(_ventaProductoMesDatos);
+        setVentaProductoMesDatos(_ventaProductoMesDatos);
         formReporte.setFieldsValue({ monto_total_del_mes: montoMensual });
     }
 
@@ -370,28 +388,36 @@ export const MantVentas = () => {
         }, */
         {
             title: "Nombre del Producto",
-            dataIndex: "nombre_del_producto",
+            dataIndex: "_datoNombre",
             key: "productoNombre",
-            render: (val) => productos.find((e) => e.id === val)?.nombre,
         },
         {
             title: "Cantidad Vendida",
-            dataIndex: "cantidad",
+            dataIndex: "_datoCantidad",
             key: "cantidadVendida",
         },
         {
             title: "Monto Total",
-            dataIndex: "id_del_producto",
+            dataIndex: "_datoMontoTotal",
             key: "montoTotal",
-            render: (val) => {
-                const _costo = productos.find((e) => e.id === val)?.precio_de_venta;
-                const _productosVenta = ventaProductoMes;
-                const _productoCantidad = _productosVenta?.find((e) => e.id_del_producto === val)?.cantidad;
-                const _monto = _costo * _productoCantidad;
-                return `$${_monto}` || '';
-            }
         },
     ]
+
+    const generarPDF = ( ) => {
+        // Crear el objeto PDF
+        const doc = new jsPDF();
+
+        // Crear la tabla en el PDF
+        doc.autoTable({
+          head: [columns4.map(column => column.title)],
+          body: ventaProductoMesDatos.map((record) =>
+            columns4.map((column) => record[column.dataIndex])
+          ),
+        });
+
+        // Devolver el objeto PDF
+        doc.save('table.pdf');
+      }
 
   return (
      <>
@@ -590,7 +616,7 @@ export const MantVentas = () => {
                 <Button key="cancel" onClick={onCancel}>
                     Cerrar
                 </Button>,
-                <Button key="save" type="primary" onClick={onCancel}>
+                <Button key="save" type="primary" onClick={generarPDF}>
                     Exportar
                 </Button>
             ]}
@@ -642,7 +668,7 @@ export const MantVentas = () => {
             </Form>
             <Table
                 columns={columns4}
-                dataSource={ventaProductoMes}
+                dataSource={ventaProductoMesDatos}
             />
         </Modal>
     </>
