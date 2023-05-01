@@ -111,7 +111,7 @@ export const Dashboard = () => {
     </Card>
     </Col>
     <Col span={6}>
-    <Card title="Productos Vendidos" bordered={false}>
+    <Card title="Productos en Venta" bordered={false}>
     <p>{getTotalProductos()}</p>
     </Card>
     </Col>
