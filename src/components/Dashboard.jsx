@@ -90,56 +90,49 @@ export const Dashboard = () => {
       }
     });
 
-    return productosMasVendidos.sort(
-      (a, b) => b.cantidad - a.cantidad
-    );
+    return productosMasVendidos.sort((a, b) => b.cantidad - a.cantidad);
   };
 
   const productosMasVendidos = getProductosMasVendidos().slice(0, 5);
 
   return (
     <div className="site-card-wrapper">
-    <Row gutter={16}>
-    <Col span={6}>
-    <Card title="Ventas Totales" bordered={false}>
-    <p>{getTotalVentas()}</p>
-    </Card>
-    </Col>
-    <Col span={6}>
-    <Card title="Ingresos por Ventas" bordered={false}>
-    <p>{getTotalIngresos()}</p>
-    </Card>
-    </Col>
-    <Col span={6}>
-    <Card title="Productos en Venta" bordered={false}>
-    <p>{getTotalProductos()}</p>
-    </Card>
-    </Col>
-    <Col span={6}>
-    <Card title="Categorías" bordered={false}>
-    <p>{getTotalCategorias()}</p>
-    </Card>
-    </Col>
-    </Row>
-<br/>
-    <Row gutter={16}>
-    <Col span={12}>
-    <Card title="Productos más vendidos" bordered={false}>
-    <ol>
-    {getProductosMasVendidos().map((producto) => (
-    <li key={producto.id}>
-    {producto.nombre} - Cantidad vendida: {producto.cantidad}
-    </li>
-    ))}
-    </ol>
-    </Card>
-    
-    </Col>
-    
-    </Row>
-
-
+      <Row gutter={16}>
+        <Col span={6}>
+          <Card title="Ventas Totales" bordered={false}>
+            <p>{getTotalVentas()}</p>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card title="Ingresos por Ventas" bordered={false}>
+            <p>{getTotalIngresos()}</p>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card title="Productos en Venta" bordered={false}>
+            <p>{getTotalProductos()}</p>
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card title="Categorías" bordered={false}>
+            <p>{getTotalCategorias()}</p>
+          </Card>
+        </Col>
+      </Row>
+      <br />
+      <Row gutter={16}>
+        <Col span={12}>
+          <Card title="Productos más vendidos" bordered={false}>
+            <ol>
+              {getProductosMasVendidos().map((producto) => (
+                <li key={producto.id}>
+                  {producto.nombre} - Cantidad vendida: {producto.cantidad}
+                </li>
+              ))}
+            </ol>
+          </Card>
+        </Col>
+      </Row>
     </div>
-    );
-    };
-    
+  );
+};
