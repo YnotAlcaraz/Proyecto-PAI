@@ -244,13 +244,14 @@ export const MantVentas = () => {
                 return `$${montoTotal}`;
             }
         },
-        {
+        /* {
             title: "Productos",
             dataIndex: "id",
             key: "productos",
             render: (key, record) => (
                 <>
                   <Button
+                    ghost
                     type="primary"
                     style={{ marginRight: 16 }}
                     onClick={() => mostrarProductos(key)}
@@ -259,7 +260,7 @@ export const MantVentas = () => {
                   </Button>
                 </>
               ),
-        },
+        }, */
         {
             title: "Acciones",
             dataIndex: "id",
@@ -272,7 +273,8 @@ export const MantVentas = () => {
                   style={{ marginRight: 16, marginTop: 5, width: '100%' }}
                   onClick={() => onEdit(key)}
                 >
-                  Agregar Productos
+                  {/* Agregar Productos */}
+                  Lista de Productos
                 </Button>
                 <Popconfirm
                   title="¿Deseas Eliminar Esta Venta?"
@@ -280,7 +282,7 @@ export const MantVentas = () => {
                   okText="Sí"
                   cancelText="No"
                 >
-                  <Button type="danger" style={{ marginRight: 16,  marginTop: 5, width: '100%'}}>
+                  <Button danger type="primary" style={{ marginRight: 16,  marginTop: 5, width: '100%'}}>
                     Eliminar Venta
                   </Button>
                 </Popconfirm>
@@ -430,6 +432,10 @@ export const MantVentas = () => {
         // Devolver el objeto PDF
         doc.save('table.pdf');
       }
+
+    const onGenerarExcel = () => {
+
+    }
 
   return (
      <>
@@ -628,8 +634,11 @@ export const MantVentas = () => {
                 <Button key="cancel" onClick={onCancel}>
                     Cerrar
                 </Button>,
-                <Button key="save" type="primary" onClick={generarPDF}>
-                    Exportar
+                <Button key="savePDF" type="primary" onClick={generarPDF}>
+                    Exportar como PDF
+                </Button>,
+                <Button key="saveXLSX" type="primary" onClick={onGenerarExcel}>
+                    Exportar como XLSX
                 </Button>
             ]}
         >
