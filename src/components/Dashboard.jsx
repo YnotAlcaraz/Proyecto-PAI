@@ -242,8 +242,8 @@ for (let i = 0; i < 7; i++) {
         </Col>
       </Row>
       <div>
-      <canvas id="myChart" width="400" height="400"></canvas>
-    </div>
+      <canvas id="myChart" ></canvas>
+      </div>
     </div>
     
   );
