@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "antd";
 import axios from "axios";
 import Chart from 'chart.js/auto';
+import moment from 'moment';
 
 export const Dashboard = () => {
   const [ventas, setVentas] = useState([]);
@@ -44,52 +45,48 @@ export const Dashboard = () => {
         const productosResponse = await fetch('http://localhost:3000/productos');
         const productosData = await productosResponse.json();
   
-        const today = new Date();
-
-const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-
-const dates = [];
-
-// Construimos un array con las fechas de los últimos 7 días en formato YYYY/MM/DD
-for (let i = 0; i < 7; i++) {
-  const date = new Date(lastWeek.getTime() + i * 24 * 60 * 60 * 1000);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  dates.push(`${year}/${month}/${day}`);
-}
-
+        const today = moment();
+        const lastWeek = today.clone().subtract(6, 'days');
+        const dates = [];
         
+        // Construimos un array con las fechas de los últimos 7 días en formato DD/MM/YYYY
+        for (let i = 0; i < 7; i++) {
+          const date = lastWeek.clone().add(i, 'days');
+          const formattedDate = date.format('DD/MM/YYYY');
+          dates.push(formattedDate);
+        }
         
-  
         const data = [];
-
+        
         for (let i = 0; i < dates.length; i++) {
-          console.log(dates)
-          const date = new Date(dates[i]);
-          console.log(date)
-          const ventasEnFecha = ventasData.filter(venta => venta.fecha_venta === `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`);
-          console.log(`Ventas en fecha ${date}:`, ventasEnFecha);
+          const date = moment(dates[i], 'DD/MM/YYYY');
+          const ventasEnFecha = ventasData.filter(venta => moment(venta.fecha_venta, 'DD/MM/YYYY').isSame(date, 'day'));
           const productosEnVentas = ventasProductosData.filter(vp => ventasEnFecha.find(v => v.id === vp.idVenta));
           const gananciasEnFecha = productosEnVentas.reduce((total, vp) => {
-            const producto = productosData.find(p => p.id === vp.id);
+            const producto = productosData.find(p => p.codigo_de_barras === vp.codigo_de_barras);
             return total + vp.cantidad * producto.precio_de_venta;
           }, 0);
           data.push(gananciasEnFecha);
-          console.log(`Ganancias en fecha ${date}:`, gananciasEnFecha);
+          console.log(`Ganancias en fecha ${date.format('DD/MM/YYYY')}: ${gananciasEnFecha}`);
         }
         
 
-        
+        const colors = [];
+for (let i = 0; i < 7; i++) {
+  const randomColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.2)`;
+  colors.push(randomColor);
+}
+
         setChartData({
           labels: dates,
           datasets: [
             {
-              label: 'Ventas por día',
+              label: 'Ganancias',
               data: data,
               fill: true,
               borderColor: 'rgb(75, 192, 192)',
+              backgroundColor: colors,
+
               tension: 0.1
             }
           ]
@@ -106,14 +103,29 @@ for (let i = 0; i < 7; i++) {
       const chart = new Chart('myChart', {
         type: 'bar',
         data: chartData,
-        options: chartOptions
+        options: {
+          plugins: {
+            title: {
+              display: true,
+              text: 'Ventas últimos 7 días',
+              font: {
+                size: 24
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
       });
 
       return () => {
         chart.destroy();
       };
     }
-  }, [chartData, chartOptions]);
+  }, [chartData]);
 
 
 
