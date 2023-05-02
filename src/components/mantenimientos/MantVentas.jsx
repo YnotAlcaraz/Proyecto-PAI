@@ -244,13 +244,14 @@ export const MantVentas = () => {
                 return `$${montoTotal}`;
             }
         },
-        {
+        /* {
             title: "Productos",
             dataIndex: "id",
             key: "productos",
             render: (key, record) => (
                 <>
                   <Button
+                    ghost
                     type="primary"
                     style={{ marginRight: 16 }}
                     onClick={() => mostrarProductos(key)}
@@ -259,7 +260,7 @@ export const MantVentas = () => {
                   </Button>
                 </>
               ),
-        },
+        }, */
         {
             title: "Acciones",
             dataIndex: "id",
@@ -272,7 +273,8 @@ export const MantVentas = () => {
                   style={{ marginRight: 16, marginTop: 5, width: '100%' }}
                   onClick={() => onEdit(key)}
                 >
-                  Agregar Productos
+                  {/* Agregar Productos */}
+                  Lista de Productos
                 </Button>
                 <Popconfirm
                   title="¿Deseas Eliminar Esta Venta?"
