@@ -210,9 +210,8 @@ export const MantVentas = () => {
             _ventaProductoMesDatos = [..._ventaProductoMesDatos, objectDato]
 
         });
-        console.log(_ventaProductoMesDatos);
         setVentaProductoMesDatos(_ventaProductoMesDatos);
-        formReporte.setFieldsValue({ monto_total_del_mes: montoMensual });
+        formReporte.setFieldsValue({ monto_total_del_mes: `$${montoMensual}` });
     }
 
 
@@ -407,7 +406,7 @@ export const MantVentas = () => {
         },
     ]
 
-    const generarPDF = ( ) => {
+    const onGenerarPDF = ( ) => {
         const nombreDelReporte = `Reporte De Ventas Del Mes De ${mesOptions.find((e) => e.value === mes)?.label}`;
         const fechaDelReporte = formReporte.getFieldValue('fecha');
         const horaDelReporte = formReporte.getFieldValue('hora');
@@ -415,27 +414,23 @@ export const MantVentas = () => {
 
         // Crear el objeto PDF
         const doc = new jsPDF();
-        doc.text(nombreDelReporte, 14, 16);
-        doc.text(fechaDelReporte, 14, 22);
-        doc.text(horaDelReporte, 14, 26);
-        doc.text('Eso TILIIIIIIIIIIN', 14,34)
-        doc.addImage(img, 'jpg', 10,78,12,15)
-        // Crear la tabla en el PDF
+        doc.addImage(img, 'jpg', 20,15,20,30);
+        doc.text('INSTITUTO TECNOLÓGICO DE MEXICALI', 50, 25);
+        doc.text('Proyecto de Administración de Inventarios', 52, 32)
+        doc.text(nombreDelReporte, 57, 40);
+        doc.text(`Fecha: ${fechaDelReporte}`, 50,50);
+        doc.text(`Hora: ${horaDelReporte}`, 132, 50);
         doc.autoTable({
           head: [columns4.map(column => column.title)],
           body: ventaProductoMesDatos.map((record) =>
             columns4.map((column) => record[column.dataIndex])
           ),
-          startY: 50,
+          startY: 60,
         });
 
         // Devolver el objeto PDF
-        doc.save('table.pdf');
+        doc.save('ReporteVentas.pdf');
       }
-
-    const onGenerarExcel = () => {
-
-    }
 
   return (
      <>
@@ -634,11 +629,8 @@ export const MantVentas = () => {
                 <Button key="cancel" onClick={onCancel}>
                     Cerrar
                 </Button>,
-                <Button key="savePDF" type="primary" onClick={generarPDF}>
+                <Button key="savePDF" type="primary" onClick={onGenerarPDF}>
                     Exportar como PDF
-                </Button>,
-                <Button key="saveXLSX" type="primary" onClick={onGenerarExcel}>
-                    Exportar como XLSX
                 </Button>
             ]}
         >
