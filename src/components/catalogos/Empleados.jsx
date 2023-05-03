@@ -187,7 +187,7 @@ export const Empleados = () => {
         <>
           <Button
             type="primary"
-            style={{ marginRight: 16 }}
+            style={{ marginRight: 16, width: 100}}
             onClick={() => onEdit(key)}
           >
             Editar
@@ -198,7 +198,7 @@ export const Empleados = () => {
             okText="Sí"
             cancelText="No"
           >
-            <Button type="danger" style={{ marginRight: 16 }}>
+            <Button danger type="primary" style={{ marginRight: 16, width: 100}}>
               Eliminar
             </Button>
           </Popconfirm>
