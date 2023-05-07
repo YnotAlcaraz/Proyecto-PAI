@@ -14,6 +14,9 @@ import {
   Spin,
 } from "antd";
 import axios from "axios";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { muchoTexto } from "./imagen";
 
 export const MantVentas = () => {
     const [form] = Form.useForm();
@@ -39,6 +42,7 @@ export const MantVentas = () => {
     const [visibleReporteGenerado, setVisibleReporteGenerado] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [mes, setMes] = useState(1);
+    const [ventaProductoMesDatos, setVentaProductoMesDatos] = useState([]);
     let conter = 0;
 
     useEffect(() => {
@@ -193,7 +197,21 @@ export const MantVentas = () => {
             })
         })
         setVentaProductoMes(_ventasProductosDelMes)
-        formReporte.setFieldsValue({ monto_total_del_mes: montoMensual });
+        let _ventaProductoMesDatos = [];
+        _ventasProductosDelMes.map((venta) => {
+            const _datoNombre = productos.find((e) => e.id === venta.id_del_producto)?.nombre;
+            const _datoPrecio = productos.find((e) => e.id === venta.id_del_producto)?.precio_de_venta;
+            const _datoMontoTotal = _datoPrecio * venta.cantidad;
+            const objectDato = {
+                _datoNombre,
+                _datoCantidad: venta.cantidad,
+                _datoMontoTotal,
+            }
+            _ventaProductoMesDatos = [..._ventaProductoMesDatos, objectDato]
+
+        });
+        setVentaProductoMesDatos(_ventaProductoMesDatos);
+        formReporte.setFieldsValue({ monto_total_del_mes: `$${montoMensual}` });
     }
 
 
@@ -225,13 +243,14 @@ export const MantVentas = () => {
                 return `$${montoTotal}`;
             }
         },
-        {
+        /* {
             title: "Productos",
             dataIndex: "id",
             key: "productos",
             render: (key, record) => (
                 <>
                   <Button
+                    ghost
                     type="primary"
                     style={{ marginRight: 16 }}
                     onClick={() => mostrarProductos(key)}
@@ -240,7 +259,7 @@ export const MantVentas = () => {
                   </Button>
                 </>
               ),
-        },
+        }, */
         {
             title: "Acciones",
             dataIndex: "id",
@@ -253,7 +272,8 @@ export const MantVentas = () => {
                   style={{ marginRight: 16, marginTop: 5, width: '100%' }}
                   onClick={() => onEdit(key)}
                 >
-                  Agregar Productos
+                  {/* Agregar Productos */}
+                  Lista de Productos
                 </Button>
                 <Popconfirm
                   title="¿Deseas Eliminar Esta Venta?"
@@ -261,7 +281,7 @@ export const MantVentas = () => {
                   okText="Sí"
                   cancelText="No"
                 >
-                  <Button type="danger" style={{ marginRight: 16,  marginTop: 5, width: '100%'}}>
+                  <Button danger type="primary" style={{ marginRight: 16,  marginTop: 5, width: '100%'}}>
                     Eliminar Venta
                   </Button>
                 </Popconfirm>
@@ -370,28 +390,47 @@ export const MantVentas = () => {
         }, */
         {
             title: "Nombre del Producto",
-            dataIndex: "nombre_del_producto",
+            dataIndex: "_datoNombre",
             key: "productoNombre",
-            render: (val) => productos.find((e) => e.id === val)?.nombre,
         },
         {
             title: "Cantidad Vendida",
-            dataIndex: "cantidad",
+            dataIndex: "_datoCantidad",
             key: "cantidadVendida",
         },
         {
             title: "Monto Total",
-            dataIndex: "id_del_producto",
+            dataIndex: "_datoMontoTotal",
             key: "montoTotal",
-            render: (val) => {
-                const _costo = productos.find((e) => e.id === val)?.precio_de_venta;
-                const _productosVenta = ventaProductoMes;
-                const _productoCantidad = _productosVenta?.find((e) => e.id_del_producto === val)?.cantidad;
-                const _monto = _costo * _productoCantidad;
-                return `$${_monto}` || '';
-            }
+            render: (val) => `$${val}`,
         },
     ]
+
+    const onGenerarPDF = ( ) => {
+        const nombreDelReporte = `Reporte De Ventas Del Mes De ${mesOptions.find((e) => e.value === mes)?.label}`;
+        const fechaDelReporte = formReporte.getFieldValue('fecha');
+        const horaDelReporte = formReporte.getFieldValue('hora');
+        let img = muchoTexto;
+
+        // Crear el objeto PDF
+        const doc = new jsPDF();
+        doc.addImage(img, 'jpg', 20,15,20,30);
+        doc.text('INSTITUTO TECNOLÓGICO DE MEXICALI', 50, 25);
+        doc.text('Proyecto de Administración de Inventarios', 52, 32)
+        doc.text(nombreDelReporte, 57, 40);
+        doc.text(`Fecha: ${fechaDelReporte}`, 50,50);
+        doc.text(`Hora: ${horaDelReporte}`, 132, 50);
+        doc.autoTable({
+          head: [columns4.map(column => column.title)],
+          body: ventaProductoMesDatos.map((record) =>
+            columns4.map((column) => record[column.dataIndex])
+          ),
+          startY: 60,
+        });
+
+        // Devolver el objeto PDF
+        doc.save('ReporteVentas.pdf');
+      }
 
   return (
      <>
@@ -590,8 +629,8 @@ export const MantVentas = () => {
                 <Button key="cancel" onClick={onCancel}>
                     Cerrar
                 </Button>,
-                <Button key="save" type="primary" onClick={onCancel}>
-                    Exportar
+                <Button key="savePDF" type="primary" onClick={onGenerarPDF}>
+                    Exportar como PDF
                 </Button>
             ]}
         >
@@ -642,7 +681,7 @@ export const MantVentas = () => {
             </Form>
             <Table
                 columns={columns4}
-                dataSource={ventaProductoMes}
+                dataSource={ventaProductoMesDatos}
             />
         </Modal>
     </>
