@@ -4,36 +4,63 @@ import axios from "axios";
 
 export const Categorias = () => {
   const url = "http://localhost:3000/categorias";
+  const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [categoriaId, setCategoriaId] = useState();
   const [pagos, setPagos] = useState([]);
-  const [visible, setVisible] = useState(false);
-  const [iden, setIden] = useState();
   const [desc, setDesc] = useState();
+  const [visible, setVisible] = useState(false);
+
+  const fetchCategorias = () => {
+    axios
+    .get(url)
+    .then((res) => {
+      setPagos(res.data);
+    })
+    .catch((err) => console.error(err));
+  };
 
   useEffect(() => {
-    axios
-      .get(url)
-      .then((res) => {
-        setPagos(res.data);
-      })
-      .catch((err) => console.error(err));
+    fetchCategorias();
   }, [isLoading]);
+
+  const onEdit = async (id) => {
+    setIsEdit(true);
+    setVisible(true);
+    form.resetFields();
+    setCategoriaId(id);
+    const _categoria = await axios
+      .get(`${url}/${id}`)
+      .then((res) => res.data)
+      .catch((err) => console.error(err));
+      form.setFieldsValue(_categoria);
+  };
 
   const onFinish = () => {
     if (desc) {
+      const _categoria = form.getFieldsValue();
       //POST
       if (!isEdit) {
         setIsLoading(true);
         axios
-          .post(url, { descripcion: desc })
+          .post(url, _categoria)
           .then(() => {
             setIsLoading(false);
             setVisible(false);
+            fetchCategorias();
+            form.resetFields();
           })
           .catch((err) => console.error(err));
       } else {
         //PATCH
+        axios.patch(`${url}/${categoriaId}`, _categoria).then(() => {
+          setIsEdit(false);
+          setIsLoading(false);
+          setVisible(false);
+          fetchCategorias();
+          form.resetFields();
+        });
       }
     } else {
       alert("Por Favor Llene Los Campos Requeridos");
@@ -50,15 +77,10 @@ export const Categorias = () => {
       .catch((err) => console.error(err));
   };
 
-  const onEdit = (id) => {
-    setIsEdit(true);
-    setVisible(true);
-  };
-
   const onCancel = () => {
     setVisible(false);
     setIsEdit(false);
-    setIden();
+    form.resetFields();
     setDesc();
   };
 
@@ -133,7 +155,11 @@ export const Categorias = () => {
           </Button>,
         ]}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          form={form}
+        >
           <Row gutter={10}>
             <Col xs={24} sm={24} md={24}>
               <Form.Item
