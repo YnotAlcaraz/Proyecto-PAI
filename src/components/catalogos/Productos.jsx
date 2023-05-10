@@ -10,6 +10,7 @@ import {
   Select,
   Col,
   Row,
+  InputNumber,
 } from "antd";
 import axios from "axios";
 
@@ -320,7 +321,8 @@ export const Productos = () => {
                   },
                 ]}
               >
-                <Input
+                <InputNumber
+                  style={{ width: '100%' }}
                   onChange={(e) => setPrecio(e.target.value)}
                   value={precio}
                 />
@@ -333,7 +335,11 @@ export const Productos = () => {
                   message: "Este Campo Es Requerido"
                 }]}
               >
-                <Input onChange={(e) => setCantidad(e.target.value)} value={cantidad}/>
+                <InputNumber
+                  style={{ width: '100%' }}
+                  onChange={(e) => setCantidad(e.target.value)}
+                  value={cantidad}
+                />
               </Form.Item>
               <Form.Item
                 name="categoria"

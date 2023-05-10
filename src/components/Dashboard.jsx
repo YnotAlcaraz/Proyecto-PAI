@@ -67,7 +67,6 @@ export const Dashboard = () => {
             return total + vp.cantidad * producto.precio_de_venta;
           }, 0);
           data.push(gananciasEnFecha);
-          console.log(`Ganancias en fecha ${date.format('DD/MM/YYYY')}: ${gananciasEnFecha}`);
         }
         
 
