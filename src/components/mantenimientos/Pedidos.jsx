@@ -9,6 +9,7 @@ import {
   Select,
   Col,
   Row,
+  InputNumber,
 } from "antd";
 import axios from "axios";
 
@@ -25,9 +26,7 @@ export const Pedidos = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [iden, setIden] = useState();
   const [productos, setProductos] = useState();
-  const [cantidad, setCantidad] = useState();
   const [proveedor, setProveedor] = useState();
   const [metodoPago, setMetodoPago] = useState();
   const [estatus, setEstatus] = useState();
@@ -100,6 +99,10 @@ export const Pedidos = () => {
   const onFinish = () => {
     if (true) {
       const _pedido = form.getFieldsValue();
+      const _producto = prod.find((e) => e.id === _pedido?.productos)
+      if (_pedido?.estatus === "Entregado") {
+        _producto.cantidad = _producto.cantidad + _pedido.cantidad
+      }
       //POST
       if (!isEdit) {
         setIsLoading(true);
@@ -108,6 +111,7 @@ export const Pedidos = () => {
           setVisible(false);
           fetchPedidos();
           form.resetFields();
+          axios.patch(`${urlProductos}/${_producto?.id}`, _producto);
         }).catch(err => console.error(err));
       } else {
         //PATCH
@@ -117,6 +121,7 @@ export const Pedidos = () => {
           setVisible(false);
           fetchPedidos();
           form.resetFields();
+          axios.patch(`${urlProductos}/${_producto?.id}`, _producto);
         });
       }
     } else {
@@ -176,27 +181,34 @@ export const Pedidos = () => {
       dataIndex: "id",
       key: "acciones",
       width: 200,
-      render: (key, record) => (
-        <>
-          <Button
-            type="primary"
-            style={{ marginRight: 16, width: 100}}
-            onClick={() => onEdit(key)}
-            >
-            Editar
-          </Button>
-          <Popconfirm
-            title="¿Deseas Eliminar Este Empleado?"
-            onConfirm={() => onDelete(key)}
-            okText="Sí"
-            cancelText="No"
-          >
-            <Button danger type="primary" style={{ marginRight: 16, width: 100}}>
-              Eliminar
-            </Button>
-          </Popconfirm>
-        </>
-      ),
+      render: (key) => {
+        const _pedido = pedidos.find((e) => e.id === key);
+        if (_pedido?.estatus !== "Entregado") {
+          return (
+            <>
+              <Button
+                type="primary"
+                style={{ marginRight: 16, width: 100}}
+                onClick={() => onEdit(key)}
+                >
+                Editar
+              </Button>
+              <Popconfirm
+                title="¿Deseas Eliminar Este Empleado?"
+                onConfirm={() => onDelete(key)}
+                okText="Sí"
+                cancelText="No"
+              >
+                <Button danger type="primary" style={{ marginRight: 16, width: 100}}>
+                  Eliminar
+                </Button>
+              </Popconfirm>
+            </>
+          )
+        } else {
+          return 'Pedido Entregado';
+        }
+      },
     },
   ];;
   return (
@@ -250,7 +262,7 @@ export const Pedidos = () => {
                 name="cantidad"
                 label="Cantidad"
               >
-                <Input onChange={e => setCantidad(e.target.value)} value={cantidad}/>
+                <InputNumber style={{ width: '100%' }} />
               </Form.Item>
               <Form.Item
                 name="proveedor"
