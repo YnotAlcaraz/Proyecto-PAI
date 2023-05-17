@@ -138,15 +138,13 @@ export const MantVentas = () => {
     };
 
     const onFinish = () => {
-        if (!isEdit) {
-            setIsLoading(true);
-            const fecha = new Date().toLocaleDateString('en-GB');
-            const fechaMes = new Date();
-            const month = fechaMes.getMonth()+1;
-            axios.post(urlVentas, { fecha_venta: fecha, mes: month, empleado: empleadoId }).then(() => {
-                setIsLoading(false);
-            }).catch(err => console.error(err));
-        }
+        setIsLoading(true);
+        const fecha = new Date().toLocaleDateString('en-GB');
+        const fechaMes = new Date();
+        const month = fechaMes.getMonth()+1;
+        axios.post(urlVentas, { fecha_venta: fecha, mes: month, empleado: empleadoId }).then(() => {
+            setIsLoading(false);
+        }).catch(err => console.error(err));
         onCancel();
     }
 
