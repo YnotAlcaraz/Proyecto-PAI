@@ -17,30 +17,13 @@ import axios from "axios";
 export const Proveedores = () => {
   const url = "http://localhost:3000/proveedores";
   const url2 = "http://localhost:3000/pagos";
+  const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [proveedores, setProveedores] = useState([]);
   const [pagos, setPagos] = useState([]);
   const [visible, setVisible] = useState(false);
-  const [iden, setIden] = useState();
-  const [nomb, setNomb] = useState();
-  const [nombEmp, setNombEmp] = useState();
-  const [corr, setCorr] = useState();
-  const [tel, setTel] = useState();
-  const [dir, setDir] = useState();
-  const [dirFac, setDirFac] = useState();
-  const [pago, setPago] = useState();
-
-  const data = {
-    id: iden,
-    nombre: nomb,
-    nombre_empresa: nombEmp,
-    email: corr,
-    telefono: tel,
-    direccion: dir,
-    direccion_facturacion: dirFac,
-    forma_pago: pago,
-  };
+  const [proveedorId, setProveedorId] = useState();
 
   const options = pagos.map((x) => {
     return {
@@ -49,14 +32,17 @@ export const Proveedores = () => {
     };
   });
 
-  useEffect(() => {
+  const fetchProveedores = () => {
     axios
-      .get(url)
-      .then((res) => {
-        setProveedores(res.data);
-      })
-      .catch((err) => console.error(err));
+    .get(url)
+    .then((res) => {
+      setProveedores(res.data);
+    })
+    .catch((err) => console.error(err));
+  };
 
+  useEffect(() => {
+    fetchProveedores();
     axios
       .get(url2)
       .then((res) => {
@@ -65,20 +51,45 @@ export const Proveedores = () => {
       .catch((err) => console.error(err));
   }, [isLoading]);
 
+  const onEdit = async (id) => {
+    setIsEdit(true);
+    setVisible(true);
+    form.resetFields();
+    setProveedorId(id);
+    const _proveedor = await axios
+      .get(`${url}/${id}`)
+      .then((res) => {
+        return res.data
+      })
+      .catch((err) => console.error(err));
+      console.log(_proveedor);
+      form.setFieldsValue(_proveedor);
+  };
+
   const onFinish = () => {
-    if (iden && nomb && corr && tel && dir) {
+    if (true) {
+      const _proveedor = form.getFieldsValue();
       //POST
       if (!isEdit) {
         setIsLoading(true);
         axios
-          .post(url, data)
+          .post(url, _proveedor)
           .then(() => {
             setIsLoading(false);
             setVisible(false);
+            fetchProveedores();
+            form.resetFields();
           })
           .catch((err) => console.error(err));
       } else {
         //PATCH
+        axios.patch(`${url}/${proveedorId}`, _proveedor).then(() => {
+          setIsEdit(false);
+          setIsLoading(false);
+          setVisible(false);
+          fetchProveedores();
+          form.resetFields();
+        });
       }
     } else {
       alert("Por Favor Llene Los Campos Requeridos");
@@ -95,14 +106,10 @@ export const Proveedores = () => {
       .catch((err) => console.error(err));
   };
 
-  const onEdit = () => {
-    setIsEdit(true);
-    setVisible(true);
-  };
-
   const onCancel = () => {
     setIsEdit(false);
     setVisible(false);
+    form.resetFields();
   };
 
   const columns = [
@@ -231,7 +238,11 @@ export const Proveedores = () => {
           </Button>,
         ]}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          form={form}
+        >
           <Row gutter={10}>
             <Col xs={24} sm={24} md={12}>
               <Form.Item
@@ -244,7 +255,7 @@ export const Proveedores = () => {
                   },
                 ]}
               >
-                <Input onChange={(e) => setNomb(e.target.value)} value={nomb} />
+                <Input />
               </Form.Item>
               <Form.Item
                 name="nombre_empresa"
@@ -256,10 +267,7 @@ export const Proveedores = () => {
                   },
                 ]}
               >
-                <Input
-                  onChange={(e) => setNombEmp(e.target.value)}
-                  value={nombEmp}
-                />
+                <Input />
               </Form.Item>
               <Form.Item
                 name="email"
@@ -271,10 +279,10 @@ export const Proveedores = () => {
                   },
                 ]}
               >
-                <Input onChange={(e) => setCorr(e.target.value)} value={corr} />
+                <Input />
               </Form.Item>
               <Form.Item
-                name="tel"
+                name="telefono"
                 label="Número De Teléfono"
                 rules={[
                   {
@@ -283,7 +291,7 @@ export const Proveedores = () => {
                   },
                 ]}
               >
-                <Input onChange={(e) => setTel(e.target.value)} value={tel} />
+                <Input />
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={12}>
@@ -297,7 +305,7 @@ export const Proveedores = () => {
                   },
                 ]}
               >
-                <Input onChange={(e) => setDir(e.target.value)} value={dir} />
+                <Input />
               </Form.Item>
               <Form.Item
                 name="direccion_facturacion"
@@ -309,13 +317,10 @@ export const Proveedores = () => {
                   },
                 ]}
               >
-                <Input
-                  onChange={(e) => setDirFac(e.target.value)}
-                  val={dirFac}
-                />
+                <Input />
               </Form.Item>
               <Form.Item
-                name="pago"
+                name="forma_pago"
                 label="Método De Pago"
                 rules={[
                   {
@@ -324,8 +329,7 @@ export const Proveedores = () => {
                   },
                 ]}
               >
-                {/* <Input onChange={e => setPago(e.target.value)} value={pago} /> */}
-                <Select options={options} />
+                <Select options={options}/>
               </Form.Item>
             </Col>
           </Row>
