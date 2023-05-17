@@ -26,10 +26,6 @@ export const Pedidos = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [productos, setProductos] = useState();
-  const [proveedor, setProveedor] = useState();
-  const [metodoPago, setMetodoPago] = useState();
-  const [estatus, setEstatus] = useState();
   const [prod, setProd] = useState([]);
 
   const fetchPedidos = () => {
@@ -97,6 +93,7 @@ export const Pedidos = () => {
   }
 
   const onFinish = () => {
+    const errorFields = form.getFieldsError()
     if (true) {
       const _pedido = form.getFieldsValue();
       const _producto = prod.find((e) => e.id === _pedido?.productos)
@@ -249,18 +246,22 @@ export const Pedidos = () => {
               <Form.Item
                 name="productos"
                 label="Producto"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
               >
                 <Select 
                   options={optionProductos}
-                  onChange={e => {
-                    setProductos(e);
-                  }}
-                  value={productos}
                 />
               </Form.Item>
               <Form.Item
                 name="cantidad"
                 label="Cantidad"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
               >
                 <InputNumber style={{ width: '100%' }} />
               </Form.Item>
@@ -273,8 +274,7 @@ export const Pedidos = () => {
                 }]}
               >
                 <Select 
-                  options={optionsProveedores} onChange={e => setProveedor(e)}
-                  value={proveedor}
+                  options={optionsProveedores}
                 />
               </Form.Item>
             </Col>
@@ -289,8 +289,6 @@ export const Pedidos = () => {
               >
                 <Select 
                   options={optionsPagos}
-                  onChange={e => setMetodoPago(e)}
-                  value={metodoPago}
                 />
               </Form.Item>
               <Form.Item
@@ -303,8 +301,6 @@ export const Pedidos = () => {
               >
                 <Select 
                   options={optionsEstatus}
-                  onChange={e => setEstatus(e)}
-                  value={estatus}
                 />
               </Form.Item>
             </Col>

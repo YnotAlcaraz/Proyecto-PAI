@@ -113,7 +113,7 @@ export const MantVentas = () => {
           _producto.cantidad = _producto?.cantidad - _dataProducto?.cantidad;
           axios.patch(`${urlProductos}/${_producto.id}`,_dataProducto);
         } else {
-          alert('El Stock Del Producto No Es Suficiente Para Realizar La Venta');
+          alert('Verifique que el producto seleccionado se encuentre en existencia');
         }
     }
 
@@ -138,6 +138,7 @@ export const MantVentas = () => {
     };
 
     const onFinish = () => {
+        console.log(formEmpleados.getFieldsError())
         setIsLoading(true);
         const fecha = new Date().toLocaleDateString('en-GB');
         const fechaMes = new Date();
@@ -515,6 +516,7 @@ export const MantVentas = () => {
       }
 
       const onTerminarVenta = async () => {
+        console.log(form.getFieldsError())
         const _idVenta = form.getFieldValue('idVenta');
         const _venta = await axios.get(urlVentas)
             .then(res => {
@@ -522,7 +524,7 @@ export const MantVentas = () => {
                 return _ventas.find((e) => e.id === idVenta);
             }).catch(err => console.error(err))
         _venta.terminada = true;
-        axios.patch(`${urlVentas}/${idVenta}`, _venta).then(() => {
+        axios.patch(`${urlVentas}/${_idVenta}`, _venta).then(() => {
             setVisible(false);
             fetchVentas();
         });
@@ -570,6 +572,12 @@ export const MantVentas = () => {
                 <Form.Item
                     name="empleado"
                     label="Empleado"
+                    rules={[
+                        {
+                          required: true,
+                          message: "Este Campo Es Requerido",
+                        },
+                      ]}
                 >
                     <Select
                         options={empleadosOptions}
@@ -622,6 +630,12 @@ export const MantVentas = () => {
                             <Form.Item
                                 name="categoria"
                                 label="Categoría"
+                                rules={[
+                                    {
+                                      required: true,
+                                      message: "Este Campo Es Requerido",
+                                    },
+                                  ]}
                             >
                                 <Select
                                     options={categoriasOptions}
@@ -633,6 +647,12 @@ export const MantVentas = () => {
                             <Form.Item
                                 name="nombre_del_producto"
                                 label="Nombre Del producto"
+                                rules={[
+                                    {
+                                      required: true,
+                                      message: "Este Campo Es Requerido",
+                                    },
+                                  ]}
                             >
                                 <Select
                                     options={productosOptions}
@@ -646,6 +666,12 @@ export const MantVentas = () => {
                             <Form.Item
                                 name="cantidad"
                                 label="Cantidad"
+                                rules={[
+                                    {
+                                      required: true,
+                                      message: "Este Campo Es Requerido",
+                                    },
+                                  ]}
                             >
                                 <InputNumber
                                     style={{ width: '100%' }}
@@ -656,6 +682,12 @@ export const MantVentas = () => {
                             <Form.Item
                                 name="codigo_de_barras"
                                 label="Código de Barras"
+                                rules={[
+                                    {
+                                      required: true,
+                                      message: "Este Campo Es Requerido",
+                                    },
+                                  ]}
                             >
                                 <Input
                                     disabled
