@@ -4,36 +4,63 @@ import axios from "axios";
 
 export const Pagos = () => {
   const url = "http://localhost:3000/pagos";
+  const [form] = Form.useForm(); 
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [pagos, setPagos] = useState([]);
+  const [pagoId, setPagoId] = useState();
   const [visible, setVisible] = useState(false);
-  const [iden, setIden] = useState();
   const [desc, setDesc] = useState();
 
-  useEffect(() => {
+  const fetchPagos = () => {
     axios
       .get(url)
       .then((res) => {
         setPagos(res.data);
       })
       .catch((err) => console.error(err));
+  };
+
+  useEffect(() => {
+    fetchPagos();
   }, [isLoading]);
+
+  const onEdit = async (id) => {
+    setIsEdit(true);
+    setVisible(true);
+    form.resetFields();
+    setPagoId(id);
+    const _pago = await axios
+      .get(`${url}/${id}`)
+      .then((res) => res.data)
+      .catch((err) => console.error(err));
+      form.setFieldsValue(_pago);
+  };
 
   const onFinish = () => {
     if (desc) {
+      const _pago = form.getFieldsValue();
       //POST
       if (!isEdit) {
         setIsLoading(true);
         axios
-          .post(url, { descripcion: desc })
+          .post(url, _pago)
           .then(() => {
             setIsLoading(false);
             setVisible(false);
+            fetchPagos();
+            form.resetFields();
           })
           .catch((err) => console.error(err));
       } else {
         //PATCH
+        axios.patch(`${url}/${pagoId}`, _pago).then(() => {
+          setIsEdit(false);
+          setIsLoading(false);
+          setVisible(false);
+          fetchPagos();
+          form.resetFields();
+        });
       }
     } else {
       alert("Por Favor Llene Los Campos Requeridos");
@@ -50,16 +77,10 @@ export const Pagos = () => {
       .catch((err) => console.error(err));
   };
 
-  const onEdit = (id) => {
-    setIsEdit(true);
-    setVisible(true);
-  };
-
   const onCancel = () => {
     setVisible(false);
     setIsEdit(false);
-    setIden();
-    setDesc();
+    form.resetFields();
   };
 
   const columns = [
@@ -133,7 +154,11 @@ export const Pagos = () => {
           </Button>,
         ]}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          form={form}
+        >
           <Row gutter={10}>
             <Col xs={24} sm={24} md={24}>
               <Form.Item

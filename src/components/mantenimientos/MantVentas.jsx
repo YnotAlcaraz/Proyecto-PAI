@@ -20,23 +20,28 @@ import { muchoTexto } from "./imagen";
 
 export const MantVentas = () => {
     const [form] = Form.useForm();
+    const [formEmpleados] = Form.useForm();
     const [formGenerador] = Form.useForm();
     const [formReporte] = Form.useForm();
     const urlVentas = 'http://localhost:3000/ventas';
     const urlVentasProductos = 'http://localhost:3000/ventas_productos';
     const urlProductos = 'http://localhost:3000/productos';
     const urlCategorias = 'http://localhost:3000/categorias';
+    const urlEmpleados = 'http://localhost:3000/empleados'
     const [ventas, setVentas] = useState([]);
     const [ventasProductos, setVentasProductos] = useState([]);
     const [ventaProducto, setVentaProducto] = useState();
     const [ventaProductoSort, setVentaProductoSort] = useState([]);
     const [ventaProductoMes, setVentaProductoMes] = useState([]);
+    const [empleados, setEmpleados] = useState([]);
+    const [empleadoId, setEmpleadoId] = useState();
     const [idVenta, setIdVenta] = useState();
     const [productos, setProductos] = useState([]);
     const [productosFiltered, setProductosFiltered] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [visibleEmpleado, setVisibleEmpleado] = useState(false);
     const [visibleProductos, setVisibleProductos] = useState(false);
     const [visibleReporte, setVisibleReporte] = useState(false);
     const [visibleReporteGenerado, setVisibleReporteGenerado] = useState(false);
@@ -45,11 +50,15 @@ export const MantVentas = () => {
     const [ventaProductoMesDatos, setVentaProductoMesDatos] = useState([]);
     let conter = 0;
 
-    useEffect(() => {
+    const fetchVentas = () => {
       axios.get(urlVentas)
       .then(res => {
         setVentas(res.data);
       }).catch(err => console.error(err));
+    };
+
+    useEffect(() => {
+      fetchVentas();
       axios.get(urlVentasProductos)
       .then(res => {
         setVentasProductos(res.data);
@@ -61,7 +70,11 @@ export const MantVentas = () => {
       axios.get(urlCategorias)
       .then(res => {
         setCategorias(res.data);
-      }).catch(err => console.err(err));
+      }).catch(err => console.error(err));
+      axios.get(urlEmpleados)
+      .then(res => {
+        setEmpleados(res.data);
+      }).catch(err => console.error(err));
       conter = 0;
     }, [isLoading]);
 
@@ -87,15 +100,42 @@ export const MantVentas = () => {
 
     const onAddProducto = () => {
         const _dataProducto = form.getFieldsValue();
-        setIsLoading(true);
-        axios.post(urlVentasProductos, _dataProducto).then(() => {
-            form.resetFields();
-            form.setFieldsValue({idVenta: idVenta});
-            setIsLoading(false);
-        }).catch(err => console.error(err));
-        fetchData();
+        const _producto = productos.find((e) => e.id === _dataProducto?.id_del_producto);
+        if (_producto?.cantidad >= _dataProducto?.cantidad) {
+          setIsLoading(true);
+          axios.post(urlVentasProductos, _dataProducto).then(() => {
+              form.resetFields();
+              form.setFieldsValue({idVenta: idVenta});
+              setIsLoading(false);
+          }).catch(err => console.error(err));
+          fetchData();
+          console.log(_producto)
+          _producto.cantidad = _producto?.cantidad - _dataProducto?.cantidad;
+          axios.patch(`${urlProductos}/${_producto.id}`,_dataProducto);
+        } else {
+          alert('El Stock Del Producto No Es Suficiente Para Realizar La Venta');
+        }
     }
 
+    const onDeleteProducto = (id) => {
+      const _ventaProducto = ventasProductos.find((e) => e.id === id);
+      const _producto = productos.find((e) => e.id === _ventaProducto?.id_del_producto);
+      axios.delete(`${urlVentasProductos}/${id}`).then(() => {
+        _producto.cantidad = _producto?.cantidad + _ventaProducto?.cantidad
+        axios.patch(`${urlProductos}/${_producto?.id}`, _producto);
+      });
+      fetchVentas();
+      axios.get(urlVentasProductos)
+        .then(res => {
+            const _ventasProductos = res.data;
+            setVentaProducto(_ventasProductos?.filter((e) => e.idVenta === idVenta));
+      }).catch(err => console.error(err));
+    };
+
+    const onAgregarVenta = () => {
+        formEmpleados.resetFields();
+        setVisibleEmpleado(true);
+    };
 
     const onFinish = () => {
         if (!isEdit) {
@@ -103,10 +143,11 @@ export const MantVentas = () => {
             const fecha = new Date().toLocaleDateString('en-GB');
             const fechaMes = new Date();
             const month = fechaMes.getMonth()+1;
-            axios.post(urlVentas, { fecha_venta: fecha, mes: month }).then(() => {
+            axios.post(urlVentas, { fecha_venta: fecha, mes: month, empleado: empleadoId }).then(() => {
                 setIsLoading(false);
             }).catch(err => console.error(err));
         }
+        onCancel();
     }
 
     const categoriasOptions = categorias.map(x => {
@@ -136,7 +177,14 @@ export const MantVentas = () => {
         { value: 10, label: 'Octubre'},
         { value: 11, label: 'Noviembre'},
         { value: 12, label: 'Diciembre'},
-    ]
+    ];
+
+    const empleadosOptions = empleados.map(x => {
+        return {
+            value: x.id,
+            label: `${x.nombre} ${x.apellido_paterno} ${x.apellido_materno || ''}`,
+        }
+    })
 
     const onDelete = async (id) => {
         const _ventasProductos = ventasProductos.filter((e) => e.idVenta === id);
@@ -145,7 +193,10 @@ export const MantVentas = () => {
             setIsLoading(false);
         }).catch(err => console.error(err));
         _ventasProductos.map((x) => {
+            const _producto = productos.find((e) => e.id === x.id_del_producto);
+            _producto.cantidad = _producto.cantidad + x.cantidad;
             axios.delete(`${urlVentasProductos}/${x.id}`);
+            axios.patch(`${urlProductos}/${_producto.id}`, _producto);
         });
     }
 
@@ -163,6 +214,7 @@ export const MantVentas = () => {
         setVisibleProductos(false);
         setVisibleReporte(false);
         setVisibleReporteGenerado(false);
+        setVisibleEmpleado(false);
         setIdVenta();
         conter = 0;
     }
@@ -228,6 +280,15 @@ export const MantVentas = () => {
             key: "fecha_venta"
         },
         {
+            title: "Empleado",
+            dataIndex: "empleado",
+            key: "empleado",
+            render: (val) => {
+                const _empleado = empleados.find((e) => e.id === val);
+                return `${_empleado?.nombre} ${_empleado?.apellido_paterno} ${_empleado?.apellido_materno || ''}`
+            }
+        },
+        {
             title: "Monto total de la venta",
             dataIndex: "id",
             key: "total_venta",
@@ -243,50 +304,52 @@ export const MantVentas = () => {
                 return `$${montoTotal}`;
             }
         },
-        /* {
-            title: "Productos",
-            dataIndex: "id",
-            key: "productos",
-            render: (key, record) => (
-                <>
-                  <Button
-                    ghost
-                    type="primary"
-                    style={{ marginRight: 16 }}
-                    onClick={() => mostrarProductos(key)}
-                  >
-                    Ver Productos
-                  </Button>
-                </>
-              ),
-        }, */
+        {
+            title: "Venta Terminada",
+            dataIndex: "terminada",
+            key: "terminada",
+            render: (val) => val ? `Si` : `No`
+        },
         {
             title: "Acciones",
             dataIndex: "id",
             key: "acciones",
             width: 200,
-            render: (key, record) => (
+            render: (key, record) => {
+            const _record = record;
+            if (!_record.terminada) {
+            return (
               <>
                 <Button
                   type="primary"
                   style={{ marginRight: 16, marginTop: 5, width: '100%' }}
                   onClick={() => onEdit(key)}
                 >
-                  {/* Agregar Productos */}
-                  Lista de Productos
+                  Agregar Productos
                 </Button>
                 <Popconfirm
-                  title="¿Deseas Eliminar Esta Venta?"
-                  onConfirm={() => onDelete(key)}
+                  title="¿Deseas Cancelar Esta Venta?"
+                  onConfirm={() => {onDelete(key) }}
                   okText="Sí"
                   cancelText="No"
                 >
                   <Button danger type="primary" style={{ marginRight: 16,  marginTop: 5, width: '100%'}}>
-                    Eliminar Venta
+                    Cancelar Venta
                   </Button>
                 </Popconfirm>
-              </>
-            ),
+              </>)
+            } else {
+              return (
+                <Button
+                  type="primary"
+                  style={{ marginRight: 16, marginTop: 5, width: '100%' }}
+                  onClick={() => mostrarProductos(key)}
+                >
+                  Ver Venta
+                </Button>
+              )
+            }
+            },
           },
     ]
 
@@ -340,6 +403,30 @@ export const MantVentas = () => {
                 return `$${_monto}` || '';
             }
         },
+        {
+          title: "Acciones",
+          dataIndex: "id",
+          key: "acciones",
+          render: (key) => (
+            <Popconfirm
+              title="¿Deseas Eliminar Este Producto de la Venta?"
+              onConfirm={() => onDeleteProducto(key)}
+              okText="Si"
+              cancelText="No"
+            >
+              <Button
+                danger
+                type="primary"
+                style={{
+                  marginRight: 16,
+                  width: 100,
+                }}
+              >
+                Devolver
+              </Button>
+            </Popconfirm>
+            )
+        }
     ];
 
     const columns3 = [
@@ -378,16 +465,13 @@ export const MantVentas = () => {
     ]
 
     const columns4 = [
-        /* {
+        {
             title: 'No.',
             dataIndex: "noRow",
             key: "noRow",
             width: 50,
-            render: (val) => {
-                conter = conter + 1;
-                return `${conter}`
-            }
-        }, */
+            render: (val, record, index) => index+1
+        },
         {
             title: "Nombre del Producto",
             dataIndex: "_datoNombre",
@@ -406,7 +490,7 @@ export const MantVentas = () => {
         },
     ]
 
-    const onGenerarPDF = ( ) => {
+    const onGenerarPDF = () => {
         const nombreDelReporte = `Reporte De Ventas Del Mes De ${mesOptions.find((e) => e.value === mes)?.label}`;
         const fechaDelReporte = formReporte.getFieldValue('fecha');
         const horaDelReporte = formReporte.getFieldValue('hora');
@@ -432,13 +516,27 @@ export const MantVentas = () => {
         doc.save('ReporteVentas.pdf');
       }
 
+      const onTerminarVenta = async () => {
+        const _idVenta = form.getFieldValue('idVenta');
+        const _venta = await axios.get(urlVentas)
+            .then(res => {
+                const _ventas = res.data
+                return _ventas.find((e) => e.id === idVenta);
+            }).catch(err => console.error(err))
+        _venta.terminada = true;
+        axios.patch(`${urlVentas}/${idVenta}`, _venta).then(() => {
+            setVisible(false);
+            fetchVentas();
+        });
+      }
+
   return (
      <>
         <h1>Ventas</h1>
         <hr />
         <Button
             type="primary"
-            onClick={() => onFinish()}
+            onClick={() => onAgregarVenta()}
             style={{ marginBottom: 20, marginRight: 10 }}
         >
             Agregar Venta
@@ -455,14 +553,52 @@ export const MantVentas = () => {
             columns={columns}
         />
         <Modal
+            title="Seleccionar Empleado"
+            open={visibleEmpleado}
+            onCancel={onCancel}
+            width={"50%"}
+            footer={[
+                <Button key="guardar_empleado"
+                    onClick={onFinish}
+                >
+                    Continuar
+                </Button>
+            ]}
+        >
+            <Form
+                layout="vertical"
+                form={formEmpleados}
+            >
+                <Form.Item
+                    name="empleado"
+                    label="Empleado"
+                >
+                    <Select
+                        options={empleadosOptions}
+                        onChange={(val) => setEmpleadoId(val)}
+                    />
+                </Form.Item>
+            </Form>
+        </Modal>
+        <Modal
             title={`${isEdit ? "Editar" : "Agregar"} Venta`}
             open={visible}
             onCancel={onCancel}
-            width={"75%"}
+            width={"80%"}
             footer={[
                 <Button key="cancel" onClick={onCancel}>
                     Cerrar
                 </Button>,
+                <Popconfirm
+                  title="¿Deseas Terminar Esta Venta?"
+                  onConfirm={onTerminarVenta}
+                  okText="Sí"
+                  cancelText="No"
+                >
+                <Button danger type="primary">
+                    Terminar Venta
+                </Button>
+                </Popconfirm>
             ]}
         >
             <Spin spinning={isLoading}>
