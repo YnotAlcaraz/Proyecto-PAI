@@ -290,15 +290,6 @@
     </Card>
   </Col>
 </Row>
-De esta manera, se mostrará la lista de empleados con más ventas en el panel de control. Asegúrate de ajustar el estilo y el diseño según tus necesidades.
-
-
-
-
-
-
-
-        
         <div>
         <canvas id="myChart" ></canvas>
         </div>
