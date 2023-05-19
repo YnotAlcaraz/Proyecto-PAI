@@ -10,7 +10,6 @@ export const Pagos = () => {
   const [pagos, setPagos] = useState([]);
   const [pagoId, setPagoId] = useState();
   const [visible, setVisible] = useState(false);
-  const [desc, setDesc] = useState();
 
   const fetchPagos = () => {
     axios
@@ -38,7 +37,8 @@ export const Pagos = () => {
   };
 
   const onFinish = () => {
-    if (desc) {
+    const errorFields = form.getFieldsError()
+    if (!errorFields) {
       const _pago = form.getFieldsValue();
       //POST
       if (!isEdit) {
@@ -171,7 +171,7 @@ export const Pagos = () => {
                   },
                 ]}
               >
-                <Input onChange={(e) => setDesc(e.target.value)} value={desc} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
