@@ -41,7 +41,6 @@ export const Empleados = () => {
   }, [isLoading]);
 
   const onFinish = () => {
-    if (fechaIni) {
       //POST
       if (!isEdit) {
         setIsLoading(true);
@@ -82,9 +81,6 @@ export const Empleados = () => {
             setVisible(false);
           });
       }
-    } else {
-      alert("Por Favor Llene Los Campos Requeridos");
-    }
   };
 
   const onDelete = (id) => {
@@ -274,7 +270,10 @@ export const Empleados = () => {
           </Button>,
         ]}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+        >
           <Row gutter={10}>
             <Col xs={24} sm={24} md={8}>
               <Form.Item
@@ -369,6 +368,7 @@ export const Empleados = () => {
               >
                 <DatePicker
                   onChange={(e) => setFechaNac(e.format("DD/MM/YYYY"))}
+                  style={{ width: '100%' }}
                   value={fechaNac}
                 />
               </Form.Item>
@@ -389,12 +389,6 @@ export const Empleados = () => {
               <Form.Item
                 name="no_tel"
                 label="Número de Teléfono"
-                rules={[
-                  {
-                    required: true,
-                    message: "Este Campo Es Requerido",
-                  },
-                ]}
               >
                 <Input
                   onChange={(e) => setNoTel(e.target.value)}
@@ -413,6 +407,7 @@ export const Empleados = () => {
               >
                 <DatePicker
                   onChange={(e) => setFechaIni(e.format("DD/MM/YYYY"))}
+                  style={{ width: '100%' }}
                   value={fechaIni}
                 />
               </Form.Item>

@@ -9,6 +9,7 @@ import {
   Select,
   Col,
   Row,
+  InputNumber,
 } from "antd";
 import axios from "axios";
 
@@ -17,25 +18,27 @@ export const Pedidos = () => {
   const urlPagos = 'http://localhost:3000/pagos';
   const urlProveedores = 'http://localhost:3000/proveedores';
   const urlProductos = 'http://localhost:3000/productos';
+  const [form] = Form.useForm();
   const [pedidos, setPedidos] = useState([]);
+  const [pedidoId, setPedidoId] = useState();
   const [pagos, setPagos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [iden, setIden] = useState();
-  const [productos, setProductos] = useState();
-  const [cantidad, setCantidad] = useState();
-  const [proveedor, setProveedor] = useState();
-  const [metodoPago, setMetodoPago] = useState();
-  const [estatus, setEstatus] = useState();
   const [prod, setProd] = useState([]);
 
+  const fetchPedidos = () => {
+    axios
+      .get(url)
+      .then((res) => {
+        setPedidos(res.data);
+      })
+      .catch((err) => console.error(err));
+  };
+
   useEffect(() => {
-    axios.get(url)
-    .then(res => {
-      setPedidos(res.data);
-    }).catch(err => console.error(err));
+    fetchPedidos();
     axios.get(urlPagos)
     .then(res => {
       setPagos(res.data);
@@ -49,18 +52,6 @@ export const Pedidos = () => {
       setProd(res.data);
     }).catch(err => console.error(err));
   }, [isLoading]);
-
-  const data = {
-    productos: [
-      {
-        idProducto: productos,
-        cantidad: cantidad,
-      }
-    ],
-    idProveedor: proveedor,
-    pago: metodoPago,
-    estatus: estatus,
-  }
 
   const optionsPagos = pagos.map(x => {
     return {
@@ -89,17 +80,46 @@ export const Pedidos = () => {
     {value: "Entregado", label:"Entregado"},
   ];
 
+  const onEdit = async (id) => {
+    setIsEdit(true);
+    setVisible(true);
+    form.resetFields();
+    setPedidoId(id);
+    const _pedido = await axios
+      .get(`${url}/${id}`)
+      .then((res) => res.data)
+      .catch((err) => console.error(err));
+      form.setFieldsValue(_pedido);
+  }
+
   const onFinish = () => {
-    if (estatus) {
+    const errorFields = form.getFieldsError()
+    if (true) {
+      const _pedido = form.getFieldsValue();
+      const _producto = prod.find((e) => e.id === _pedido?.productos)
+      if (_pedido?.estatus === "Entregado") {
+        _producto.cantidad = _producto.cantidad + _pedido.cantidad
+      }
       //POST
       if (!isEdit) {
         setIsLoading(true);
-        axios.post(url, data).then(() => {
+        axios.post(url, _pedido).then(() => {
           setIsLoading(false);
           setVisible(false);
+          fetchPedidos();
+          form.resetFields();
+          axios.patch(`${urlProductos}/${_producto?.id}`, _producto);
         }).catch(err => console.error(err));
       } else {
         //PATCH
+        axios.patch(`${url}/${pedidoId}`, _pedido).then(() => {
+          setIsEdit(false);
+          setIsLoading(false);
+          setVisible(false);
+          fetchPedidos();
+          form.resetFields();
+          axios.patch(`${urlProductos}/${_producto?.id}`, _producto);
+        });
       }
     } else {
       alert('Por Favor Llene Los Campos Requeridos');
@@ -113,14 +133,10 @@ export const Pedidos = () => {
     }).catch(err => console.error(err));
   }
 
-  const onEdit = (id) => {
-    setIsEdit(true);
-    setVisible(true);
-  }
-
   const onCancel = () => {
     setVisible(false);
     setIsEdit(false);
+    form.resetFields();
   }
 
   const columns = [
@@ -131,9 +147,9 @@ export const Pedidos = () => {
     },
     {
       title: "Proveedor",
-      dataIndex: "idProveedor",
-      key: "idProveedor",
-      render: (val) => proveedores.find((e) => e.id === val)?.nombre_empresa,
+      dataIndex: "proveedor",
+      key: "proveedor",
+      render: (val) => proveedores.find((e) => e.id === val)?.nombre_empresa
     },
     {
       title: "Método De Pago",
@@ -145,52 +161,51 @@ export const Pedidos = () => {
       title: "Producto",
       dataIndex: "productos",
       key: "idProducto",
-      render: (productos) =>
-      productos.map((producto) => {
-        const _nombreProducto = prod?.find((e) => e.id === producto.idProducto)?.nombre;
-        return <div key={producto.idProducto}>{_nombreProducto}</div>
-      }),
-      },
-      {
-        title: "Cantidad",
-        dataIndex: "productos",
-        key: "cantidad",
-        render: (productos) =>
-        productos.map((producto) => (
-          <div key={producto.idProducto}>{producto.cantidad}</div>
-          )),
-      },
-      {
-        title: "Estatus",
-        dataIndex: "estatus",
-        key: "estatus",
-      },
-      {
-        title: "Acciones",
-        dataIndex: "id",
+      render: (val) => prod.find((e) => e.id === val)?.nombre
+    },
+    {
+      title: "Cantidad",
+      dataIndex: "cantidad",
+      key: "cantidad",
+    },
+    {
+      title: "Estatus",
+      dataIndex: "estatus",
+      key: "estatus",
+    },
+    {
+      title: "Acciones",
+      dataIndex: "id",
       key: "acciones",
       width: 200,
-      render: (key, record) => (
-        <>
-          <Button
-            type="primary"
-            style={{ marginRight: 16, width: 100}}
-            onClick={() => onEdit(key)}
-            >
-            Editar
-          </Button>
-          <Popconfirm
-            title="¿Deseas Eliminar Este Empleado?"
-            onConfirm={() => onDelete(key)}
-            okText="Sí"
-            cancelText="No"
-          >
-            <Button danger type="primary" style={{ marginRight: 16, width: 100}}>
-              Eliminar
-            </Button>
-          </Popconfirm>
-        </>
-      ),
+      render: (key) => {
+        const _pedido = pedidos.find((e) => e.id === key);
+        if (_pedido?.estatus !== "Entregado") {
+          return (
+            <>
+              <Button
+                type="primary"
+                style={{ marginRight: 16, width: 100}}
+                onClick={() => onEdit(key)}
+                >
+                Editar
+              </Button>
+              <Popconfirm
+                title="¿Deseas Eliminar Este Empleado?"
+                onConfirm={() => onDelete(key)}
+                okText="Sí"
+                cancelText="No"
+              >
+                <Button danger type="primary" style={{ marginRight: 16, width: 100}}>
+                  Eliminar
+                </Button>
+              </Popconfirm>
+            </>
+          )
+        } else {
+          return 'Pedido Entregado';
+        }
+      },
     },
   ];;
   return (
@@ -224,26 +239,31 @@ export const Pedidos = () => {
         <Form
           layout="vertical"
           onFinish={ onFinish }
+          form={form}
         >
           <Row gutter={10}>
             <Col xs={24} sm={24} md={12}>
               <Form.Item
                 name="productos"
                 label="Producto"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
               >
                 <Select 
                   options={optionProductos}
-                  onChange={e => {
-                    setProductos(e);
-                  }}
-                  value={productos}
                 />
               </Form.Item>
               <Form.Item
                 name="cantidad"
                 label="Cantidad"
+                rules={[{
+                  required: true,
+                  message: "Este Campo Es Requerido"
+                }]}
               >
-                <Input onChange={e => setCantidad(e.target.value)} value={cantidad}/>
+                <InputNumber style={{ width: '100%' }} />
               </Form.Item>
               <Form.Item
                 name="proveedor"
@@ -254,8 +274,7 @@ export const Pedidos = () => {
                 }]}
               >
                 <Select 
-                  options={optionsProveedores} onChange={e => setProveedor(e)}
-                  value={proveedor}
+                  options={optionsProveedores}
                 />
               </Form.Item>
             </Col>
@@ -270,8 +289,6 @@ export const Pedidos = () => {
               >
                 <Select 
                   options={optionsPagos}
-                  onChange={e => setMetodoPago(e)}
-                  value={metodoPago}
                 />
               </Form.Item>
               <Form.Item
@@ -284,8 +301,6 @@ export const Pedidos = () => {
               >
                 <Select 
                   options={optionsEstatus}
-                  onChange={e => setEstatus(e)}
-                  value={estatus}
                 />
               </Form.Item>
             </Col>

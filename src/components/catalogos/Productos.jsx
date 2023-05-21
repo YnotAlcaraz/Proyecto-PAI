@@ -10,15 +10,18 @@ import {
   Select,
   Col,
   Row,
+  InputNumber,
 } from "antd";
 import axios from "axios";
 
 export const Productos = () => {
   const url = "http://localhost:3000/productos";
   const urlCategorias = "http://localhost:3000/categorias"
+  const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [productos, setProductos] = useState([]);
+  const [productoId, setProductoId] = useState();
   const [visible, setVisible] = useState(false);
   const [iden, setIden] = useState();
   const [codBarras, setCodBarras] = useState();
@@ -30,13 +33,17 @@ export const Productos = () => {
   const [categoria, setCategoria] = useState();
   const [categorias, setCategorias] = useState();
 
-  useEffect(() => {
+  const fetchProductos = () => {
     axios
       .get(url)
       .then((res) => {
         setProductos(res.data);
       })
       .catch((err) => console.error(err));
+  };
+
+  useEffect(() => {
+    fetchProductos();
     axios
       .get(urlCategorias)
       .then((res) => {
@@ -52,38 +59,43 @@ export const Productos = () => {
     }
   });
 
+  const onEdit = async (id) => {
+    setIsEdit(true);
+    setVisible(true);
+    form.resetFields();
+    setProductoId(id)
+    const _producto = await axios
+      .get(`${url}/${id}`)
+      .then((res) => res.data)
+      .catch((err) => console.error(err));
+      form.setFieldsValue(_producto);
+  };
+
   const onFinish = () => {
-    if (codBarras && nomb && desc && img && precio) {
+    const errorFields = form.getFieldsError();
+    if (!errorFields) {
+      const _producto = form.getFieldsValue();
       //POST
       if (!isEdit) {
         setIsLoading(true);
         axios
-          .post(url, {
-            codigo_de_barras: codBarras,
-            nombre: nomb,
-            descripcion: desc,
-            imagen_del_producto: img,
-            precio_de_venta: precio,
-            cantidad: cantidad,
-            categoria: categoria,
-          })
+          .post(url, _producto)
           .then(() => {
             setIsLoading(false);
             setVisible(false);
+            fetchProductos();
+            form.resetFields();
           })
           .catch((err) => console.error(err));
       } else {
         //PATCH
-        axios.patch(`${url}/${iden}`, {
-          codigo_de_barras: codBarras,
-          nombre: nomb,
-          descripcion: desc,
-          imagen_del_producto: img,
-          precio_de_venta: precio,
-          categoria: categoria,
-        });
-        setIsLoading(false);
-        setVisible(false);
+        axios.patch(`${url}/${productoId}`, _producto).then(() => {
+          setIsEdit(false);
+          setIsLoading(false);
+          setVisible(false);
+          fetchProductos();
+          form.resetFields();
+        })
       }
     } else {
       alert("Por Favor Llene Los Campos Requeridos");
@@ -98,20 +110,6 @@ export const Productos = () => {
         setIsLoading(false);
       })
       .catch((err) => console.error(err));
-  };
-
-  const onEdit = () => {
-    setIsEdit(true);
-    setVisible(true);
-
-    axios.get(`${url}/${iden}`).then((res) => {
-      setCodBarras(res.data.codigo_de_barras);
-      setNomb(res.data.nombre);
-      setDesc(res.data.descripcion);
-      setImg(res.data.imagen_del_producto);
-      setPrecio(res.data.precio_de_venta);
-      setCategoria(res.data.categoria);
-    });
   };
 
   const onCancel = () => {
@@ -254,7 +252,11 @@ export const Productos = () => {
           </Button>,
         ]}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          form={form}
+        >
           <Row gutter={10}>
             <Col xs={24} sm={24} md={12}>
               <Form.Item
@@ -320,7 +322,8 @@ export const Productos = () => {
                   },
                 ]}
               >
-                <Input
+                <InputNumber
+                  style={{ width: '100%' }}
                   onChange={(e) => setPrecio(e.target.value)}
                   value={precio}
                 />
@@ -333,7 +336,11 @@ export const Productos = () => {
                   message: "Este Campo Es Requerido"
                 }]}
               >
-                <Input onChange={(e) => setCantidad(e.target.value)} value={cantidad}/>
+                <InputNumber
+                  style={{ width: '100%' }}
+                  onChange={(e) => setCantidad(e.target.value)}
+                  value={cantidad}
+                />
               </Form.Item>
               <Form.Item
                 name="categoria"
