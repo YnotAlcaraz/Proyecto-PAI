@@ -138,15 +138,18 @@ export const MantVentas = () => {
     };
 
     const onFinish = () => {
-        console.log(formEmpleados.getFieldsError())
         setIsLoading(true);
         const fecha = new Date().toLocaleDateString('en-GB');
         const fechaMes = new Date();
         const month = fechaMes.getMonth()+1;
-        axios.post(urlVentas, { fecha_venta: fecha, mes: month, empleado: empleadoId }).then(() => {
-            setIsLoading(false);
-        }).catch(err => console.error(err));
-        onCancel();
+        if (empleadoId) {
+            axios.post(urlVentas, { fecha_venta: fecha, mes: month, empleado: empleadoId }).then(() => {
+                setIsLoading(false);
+            }).catch(err => console.error(err));
+            onCancel();
+        } else {
+            alert('Por Favor Llene Los Campos Requeridos')
+        }
     }
 
     const categoriasOptions = categorias.map(x => {
