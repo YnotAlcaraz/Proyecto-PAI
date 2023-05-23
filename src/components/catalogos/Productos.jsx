@@ -72,9 +72,8 @@ export const Productos = () => {
   };
 
   const onFinish = () => {
-    const errorFields = form.getFieldsError();
-    if (!errorFields) {
-      const _producto = form.getFieldsValue();
+    const _producto = form.getFieldsValue();
+    if (_producto.cantidad && _producto.categoria && _producto.codigo_de_barras  && _producto.descripcion && _producto.imagen_del_producto && _producto.nombre && _producto.precio_de_venta) {
       //POST
       if (!isEdit) {
         setIsLoading(true);

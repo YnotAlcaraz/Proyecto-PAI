@@ -37,9 +37,8 @@ export const Pagos = () => {
   };
 
   const onFinish = () => {
-    const errorFields = form.getFieldsError()
-    if (!errorFields) {
-      const _pago = form.getFieldsValue();
+    const _pago = form.getFieldsValue( );
+    if (_pago.descripcion) {
       //POST
       if (!isEdit) {
         setIsLoading(true);

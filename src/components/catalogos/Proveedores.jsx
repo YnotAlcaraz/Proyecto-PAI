@@ -67,9 +67,8 @@ export const Proveedores = () => {
   };
 
   const onFinish = () => {
-    const errorFields = form.getFieldsError
-    if (!errorFields) {
-      const _proveedor = form.getFieldsValue();
+    const _proveedor = form.getFieldsValue();
+    if (_proveedor.direccion && _proveedor.direccion_facturacion && _proveedor.email && _proveedor.forma_pago && _proveedor.nombre && _proveedor.nombre_empresa && _proveedor.telefono) {
       //POST
       if (!isEdit) {
         setIsLoading(true);

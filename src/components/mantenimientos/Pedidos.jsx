@@ -93,9 +93,9 @@ export const Pedidos = () => {
   }
 
   const onFinish = () => {
-    const errorFields = form.getFieldsError()
-    if (true) {
-      const _pedido = form.getFieldsValue();
+    const _pedido = form.getFieldsValue();
+    console.log(_pedido);
+    if (_pedido.cantidad && _pedido.estatus && _pedido.pago && _pedido.productos && _pedido.proveedor) {
       const _producto = prod.find((e) => e.id === _pedido?.productos)
       if (_pedido?.estatus === "Entregado") {
         _producto.cantidad = _producto.cantidad + _pedido.cantidad
