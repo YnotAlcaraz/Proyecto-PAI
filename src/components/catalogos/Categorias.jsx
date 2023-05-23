@@ -9,7 +9,6 @@ export const Categorias = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [categoriaId, setCategoriaId] = useState();
   const [pagos, setPagos] = useState([]);
-  const [desc, setDesc] = useState();
   const [visible, setVisible] = useState(false);
 
   const fetchCategorias = () => {
@@ -38,7 +37,8 @@ export const Categorias = () => {
   };
 
   const onFinish = () => {
-    if (desc) {
+    const errorFields = form.getFieldsError();
+    if(!errorFields) {
       const _categoria = form.getFieldsValue();
       //POST
       if (!isEdit) {
@@ -63,7 +63,7 @@ export const Categorias = () => {
         });
       }
     } else {
-      alert("Por Favor Llene Los Campos Requeridos");
+      alert('Por favor, llene los datos requeridos')
     }
   };
 
@@ -81,7 +81,6 @@ export const Categorias = () => {
     setVisible(false);
     setIsEdit(false);
     form.resetFields();
-    setDesc();
   };
 
   const columns = [
@@ -172,7 +171,7 @@ export const Categorias = () => {
                   },
                 ]}
               >
-                <Input onChange={(e) => setDesc(e.target.value)} value={desc} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
