@@ -48,7 +48,7 @@ export const MantVentas = () => {
     const [isEdit, setIsEdit] = useState(false);
     const [mes, setMes] = useState(1);
     const [ventaProductoMesDatos, setVentaProductoMesDatos] = useState([]);
-    let conter = 0;
+    const [montoTotal, setMontoTotal] = useState();
 
     const fetchVentas = () => {
       axios.get(urlVentas)
@@ -75,7 +75,6 @@ export const MantVentas = () => {
       .then(res => {
         setEmpleados(res.data);
       }).catch(err => console.error(err));
-      conter = 0;
     }, [isLoading]);
 
     const fetchData = () => {
@@ -218,7 +217,7 @@ export const MantVentas = () => {
         setVisibleReporteGenerado(false);
         setVisibleEmpleado(false);
         setIdVenta();
-        conter = 0;
+        setMontoTotal();
     }
 
     const mostrarProductos = (id) => {
@@ -275,8 +274,9 @@ export const MantVentas = () => {
             return acumulador;
         }, []);
         setVentaProductoMesDatos(_ventaProductoMesDatosReduce);
-        console.log(_ventaProductoMesDatos)
         formReporte.setFieldsValue({ monto_total_del_mes: `$${montoMensual}` });
+        setMontoTotal(montoMensual);
+
     }
 
 
@@ -517,12 +517,13 @@ export const MantVentas = () => {
         doc.text(nombreDelReporte, 57, 40);
         doc.text(`Fecha: ${fechaDelReporte}`, 50,50);
         doc.text(`Hora: ${horaDelReporte}`, 132, 50);
+        doc.text(`Monto Total: $${montoTotal}`, 20, 60)
         doc.autoTable({
           head: [columns4.map(column => column.title)],
           body: ventaProductoMesDatos.map((record) =>
             columns4.map((column) => record[column.dataIndex])
           ),
-          startY: 60,
+          startY: 65,
         });
 
         // Devolver el objeto PDF
