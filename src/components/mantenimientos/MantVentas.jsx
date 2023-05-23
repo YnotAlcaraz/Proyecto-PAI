@@ -264,7 +264,18 @@ export const MantVentas = () => {
             _ventaProductoMesDatos = [..._ventaProductoMesDatos, objectDato]
 
         });
-        setVentaProductoMesDatos(_ventaProductoMesDatos);
+        const _ventaProductoMesDatosReduce = _ventaProductoMesDatos.reduce((acumulador, elemento) => {
+            const encontrado = acumulador.find(item => item._datoNombre === elemento._datoNombre);
+            if (encontrado) {
+                encontrado._datoCantidad += elemento._datoCantidad;
+                encontrado._datoMontoTotal += elemento._datoMontoTotal;
+            } else {
+                acumulador.push(elemento);
+            }
+            return acumulador;
+        }, []);
+        setVentaProductoMesDatos(_ventaProductoMesDatosReduce);
+        console.log(_ventaProductoMesDatos)
         formReporte.setFieldsValue({ monto_total_del_mes: `$${montoMensual}` });
     }
 
