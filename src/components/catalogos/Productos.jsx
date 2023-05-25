@@ -13,6 +13,8 @@ import {
   InputNumber,
 } from "antd";
 import axios from "axios";
+import { render } from "react-dom";
+import ForwardTable from "antd/es/table/Table";
 
 export const Productos = () => {
   const url = "http://localhost:3000/productos";
@@ -32,6 +34,12 @@ export const Productos = () => {
   const [cantidad, setCantidad] = useState(0);
   const [categoria, setCategoria] = useState();
   const [categorias, setCategorias] = useState();
+  const [searchValue, setSearchValue] = useState('');
+  const [searchValue2, setSearchValue2] = useState('');
+  const [dataFiltrada, setDataFiltrada] = useState([]);
+  const [dataFiltrada2, setDataFiltrada2] = useState([]);
+  const [activeTable, setActiveTable] = useState('');
+  const [productosFiltered, setProductosFiltered] = useState([]);
 
   const fetchProductos = () => {
     axios
@@ -52,12 +60,16 @@ export const Productos = () => {
       .catch((err) => console.error(err));
   }, [isLoading]);
 
+
   const optionsCategorias = categorias?.map(x => {
     return {
       value: x.id,
       label: x.descripcion
     }
   });
+
+  
+
 
   const onEdit = async (id) => {
     setIsEdit(true);
@@ -115,6 +127,79 @@ export const Productos = () => {
     setIsEdit(false);
     setVisible(false);
   };
+
+  const fetchData = async (value) => {
+    try{
+      const resp = await axios.get(url)
+      const filteredData = resp.data.filter(item => item.nombre.toLowerCase().includes(searchValue.toLowerCase()));
+      const filteredData2 = resp.data.filter(item => item.codigo_de_barras == searchValue2);
+    
+      // setOptions(filteredData3);
+      setDataFiltrada(filteredData);
+      setDataFiltrada2(filteredData2);
+      console.log('Search:', filteredData);
+      console.log(filteredData2);
+      
+
+    } catch (error){
+      console.error('Error al obtener los productos', error);
+    }
+  }
+
+
+  const onChangeCategoria = (value) => {
+    const _productosFiltered = productos?.filter((e) => e.categoria === value);
+    setProductosFiltered(_productosFiltered);
+    setActiveTable('table3');
+  }
+
+
+  //EVENTOS BUSQUEDA POR ID
+  const handleSearchId = () => {
+    fetchData(searchValue2);
+    setActiveTable('table2');
+  }
+  
+  const handleKeyPressId = (e) => {
+    if (e.key === 'Enter') {
+      
+      handleSearchId();
+    }
+  };
+
+  const handleInputChangeId = (e) => {
+    const value = e.target.value;
+    setSearchValue2(value);
+  
+    if (value === ''){
+      setDataFiltrada2([]);
+      setActiveTable('');
+    }
+  }
+
+
+  //EVENTOS BUSQUEDA POR NOMBRE
+  const handleSearchNombre = () => {
+    fetchData(searchValue);
+    setActiveTable('table1');
+  }
+  
+  const handleKeyPressNombre = (e) => {
+    if (e.key === 'Enter') {
+      handleSearchNombre();
+    }
+  };
+
+  const handleInputChangeNombre = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+  
+    if (value === ''){
+      setDataFiltrada([]);
+      setActiveTable('');
+    }
+  }
+
 
   const columns = [
     {
@@ -201,20 +286,31 @@ export const Productos = () => {
         <Row gutter={10}>
           <Col xs={24} sm={4} md={6}>
             <Form.Item
-              label="Filtrar por Código de Barras"
+              label="Filtrar por codigo de barras"
             >
               <Input.Search
-                placeholder="Código de Barras"
+                placeholder="Codigo de barras"
+                enterButton="Buscar"
+                value={searchValue2}
+                onChange={handleInputChangeId}
+                onKeyPress={handleKeyPressId}
+                onSearch={handleSearchId}
               />
             </Form.Item>
           </Col>
           <Col xs={24} sm={4} md={6}>
             <Form.Item
-              label="Filtrar por Nombre"
+              label="Filtrar por nombre del producto"
             >
               <Input.Search
-                placeholder="Nombre"
+                placeholder="Nombre del producto"
+                enterButton="Buscar"
+                value={searchValue}
+                onChange={handleInputChangeNombre}
+                onKeyPress={handleKeyPressNombre}
+                onSearch={handleSearchNombre}
               />
+             
             </Form.Item>
           </Col>
           <Col xs={24} sm={4} md={6}>
@@ -223,6 +319,8 @@ export const Productos = () => {
             >
               <Select
                 placeholder="Categoría"
+                options={optionsCategorias}
+                onChange={onChangeCategoria}
               />
             </Form.Item>
           </Col>
@@ -236,7 +334,31 @@ export const Productos = () => {
       >
         Agregar Producto
       </Button>
-      <Table dataSource={productos} columns={columns} rowKey="key" />
+      
+      
+      {activeTable === '' && (
+        <Table dataSource={productos} columns={columns} rowKey="key" />
+      )}
+
+      {activeTable === 'table1' && (
+        <Table dataSource={dataFiltrada} columns={columns} rowKey="key" />
+      )}
+
+      {activeTable === 'table2' && (
+        <Table dataSource={dataFiltrada2} columns={columns} rowKey="key" />
+      )}
+
+      {activeTable === 'table3' && (
+        <Table dataSource={productosFiltered} columns={columns} rowKey="key" />
+      )}
+
+
+      {/* {searchValue2 !== '' && dataFiltrada2.length > 0 ? (
+        <Table dataSource={dataFiltrada2} columns={columns} rowKey="key" />
+        ) : (
+        <Table dataSource={productos} columns={columns} rowKey="key"/>
+      )} */}
+      
       <Modal
         title={`${isEdit ? "Editar" : "Agregar"} Producto`}
         open={visible}

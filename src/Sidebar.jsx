@@ -9,7 +9,7 @@ import {
   ScheduleOutlined,
   ContactsOutlined,
 } from "@ant-design/icons/lib/icons";
-import { Layout, Menu, theme } from "antd";
+import { Layout, Menu, theme, Form } from "antd";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import {
   Empleados,
@@ -28,6 +28,7 @@ import { Dashboard } from "./components/Dashboard";
 import { useState } from "react";
 import VentasH from "./components/catalogos/Ventas";
 const { Footer, Sider } = Layout;
+
 const items = [
   {
     label: "DASHBOARD",
@@ -155,6 +156,8 @@ export const Sidebar = () => {
         <div style={{ textAlign: "center", color: "white" }}>
           <hr />
           INSTITUTO TECNOLÓGICO DE MEXICALI
+          <br/>
+          
         </div>
       </Sider>
       <Layout className="site-layout">

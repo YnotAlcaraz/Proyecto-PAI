@@ -38,6 +38,12 @@ export const Empleados = () => {
   const [nombres, setNombres] = useState();
   const [rfc, setRfc] = useState();
   const [sexo, setSexo] = useState();
+  const [activeTable, setActiveTable] = useState('');
+  const [searchValue, setSearchValue] = useState('');
+  const [searchValue2, setSearchValue2] = useState('');
+  const [dataFiltrada, setDataFiltrada] = useState([]);
+  const [dataFiltrada2, setDataFiltrada2] = useState([])
+  const [sexoFiltered, setSexoFiltered] = useState()
   const dateFormat = 'DD/MM/YYYY';
 
   const fetchEmpleados = () => {
@@ -121,7 +127,15 @@ export const Empleados = () => {
       .get(`${url}/${id}`)
       .then((res) => {
         setEmpleado(res.data);
-
+        setNombres(res.data.nombre);
+        setApellidoMaterno(res.data.apellido_materno);
+        setApellidoPaterno(res.data.apellido_paterno);
+        setSexo(res.data.sexo);
+        setCurp(res.data.curp);
+        setFechaNac(res.data.fecha_nac);
+        setFechaIni(res.data.fecha_ini);
+        setRfc(res.data.rfc);
+        setNoTel(res.data.no_tel);
         form.setFieldsValue({
           nombre: res.data.nombre,
           apellido_paterno: res.data.apellido_paterno,
@@ -142,6 +156,74 @@ export const Empleados = () => {
     setIsEdit(false);
     form.resetFields();
   };
+
+  const onChangeSexo = (value) => {
+    const _sexoFiltro = empleados?.filter((e) => e.sexo === value);
+    setSexoFiltered(_sexoFiltro);
+    setActiveTable('table3');
+  }
+
+
+
+  const fetchData = async (value) => {
+    try{
+      const resp = await axios.get(url)
+      const filteredData = resp.data.filter(item => item.rfc == searchValue);
+      const filteredData2 = resp.data.filter(item => item.id == searchValue2);
+      // setOptions(filteredData3);
+      setDataFiltrada(filteredData);
+      setDataFiltrada2(filteredData2);
+      console.log('Search:', filteredData);
+      console.log(filteredData2);
+      
+
+    } catch (error){
+      alert('No hay coincidencias con tu busqueda', error);
+    }
+  }
+
+  const handleSearchId = () => {
+    fetchData(searchValue2);
+    setActiveTable('table2');
+  }
+  
+  const handleKeyPressId = (e) => {
+    if (e.key === 'Enter') {
+      
+      handleSearchId();
+    }
+  };
+
+  const handleInputChangeId = (e) => {
+    const value = e.target.value;
+    setSearchValue2(value);
+  
+    if (value === ''){
+      setDataFiltrada2([]);
+      setActiveTable('');
+    }
+  }
+
+  const handleSearchRfc = () => {
+    fetchData(searchValue);
+    setActiveTable('table1');
+  }
+  
+  const handleKeyPressRfc = (e) => {
+    if (e.key === 'Enter') {
+      handleSearchRfc();
+    }
+  };
+
+  const handleInputChangeRfc = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+  
+    if (value === ''){
+      setDataFiltrada([]);
+      setActiveTable('');
+    }
+  }
 
   const columns = [
     {
@@ -238,19 +320,29 @@ export const Empleados = () => {
         <Row gutter={10}>
           <Col xs={24} sm={4} md={6}>
             <Form.Item
-              label="Filtrar por Nombre"
+              label="Filtrar por Id"
             >
               <Input.Search
-                placeholder="Nombre"
+                placeholder="Id"
+                enterButton="Buscar"
+                value={searchValue2}
+                onChange={handleInputChangeId}
+                onKeyPress={handleKeyPressId}
+                onSearch={handleSearchId}
               />
             </Form.Item>
           </Col>
           <Col xs={24} sm={4} md={6}>
             <Form.Item
-              label="Filtrar por Apellido"
+              label="Filtrar por RFC"
             >
               <Input.Search
-                placeholder="Apellido Paterno"
+                placeholder="RFC"
+                enterButton="Buscar"
+                value={searchValue}
+                onChange={handleInputChangeRfc}
+                onKeyPress={handleKeyPressRfc}
+                onSearch={handleSearchRfc}
               />
             </Form.Item>
           </Col>
@@ -260,6 +352,11 @@ export const Empleados = () => {
             >
               <Select
                 placeholder="Sexo"
+                options={[
+                  { value: "Femenino", label: "Femenino" },
+                  { value: "Masculino", label: "Masculino" },
+                ]}
+                onChange={onChangeSexo}
               />
             </Form.Item>
           </Col>
@@ -273,12 +370,29 @@ export const Empleados = () => {
       >
         Agregar Empleado
       </Button>
-      <Table
+
+      {activeTable === '' && (
+        <Table dataSource={empleados} columns={columns} pagination={{ pageSize: 5 }} rowKey="key" />
+      )}
+
+      {activeTable === 'table1' && (
+        <Table dataSource={dataFiltrada} columns={columns} pagination={{ pageSize: 5 }} rowKey="key" />
+      )}
+
+      {activeTable === 'table2' && (
+        <Table dataSource={dataFiltrada2} columns={columns} pagination={{ pageSize: 5 }} rowKey="key" />
+      )}
+
+      {activeTable === 'table3' && (
+        <Table dataSource={sexoFiltered} columns={columns} pagination={{ pageSize: 5 }} rowKey="key" />
+      )}
+
+      {/* <Table
         dataSource={empleados}
         columns={columns}
         pagination={{ pageSize: 5 }}
         rowKey="key"
-      />
+      /> */}
 
       <Modal
         title={`${isEdit ? "Editar" : "Agregar"} Empleado`}
