@@ -242,6 +242,7 @@
 
     return (
       <div className="site-card-wrapper">
+        <h1>Dashboard</h1>
         <Row gutter={16}>
           <Col span={6}>
             <Card title="Ventas Totales" bordered={false}>
@@ -295,5 +296,7 @@
         </div>
       </div>
       
-    );
-  };
+      
+      );
+    };
+    

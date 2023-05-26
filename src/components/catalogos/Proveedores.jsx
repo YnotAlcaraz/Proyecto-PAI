@@ -24,6 +24,12 @@ export const Proveedores = () => {
   const [pagos, setPagos] = useState([]);
   const [visible, setVisible] = useState(false);
   const [proveedorId, setProveedorId] = useState();
+  const [activeTable, setActiveTable] = useState('');
+  const [searchValue, setSearchValue] = useState('');
+  const [searchValue2, setSearchValue2] = useState('');
+  const [dataFiltrada, setDataFiltrada] = useState([]);
+  const [dataFiltrada2, setDataFiltrada2] = useState([])
+
 
   const options = pagos.map((x) => {
     return {
@@ -112,6 +118,69 @@ export const Proveedores = () => {
     form.resetFields();
   };
 
+  const fetchData = async (value) => {
+    try{
+      const resp = await axios.get(url)
+      const filteredData = resp.data.filter(item => item.nombre_empresa.toLowerCase().includes(searchValue.toLowerCase()));
+      const filteredData2 = resp.data.filter(item => item.nombre.toLowerCase().includes(searchValue2.toLowerCase()));
+      // setOptions(filteredData3);
+      setDataFiltrada(filteredData);
+      setDataFiltrada2(filteredData2);
+      console.log('Search:', filteredData);
+      console.log(filteredData2);
+      
+
+    } catch (error){
+      alert('No hay coincidencias con tu busqueda', error);
+    }
+  }
+
+
+  //FILTRAR POR NOMBRE PROVEEDOR
+  const handleSearchNombre = () => {
+    fetchData(searchValue2);
+    setActiveTable('table2');
+  }
+  
+  const handleKeyPressNombre = (e) => {
+    if (e.key === 'Enter') {
+      
+      handleSearchNombre();
+    }
+  };
+
+  const handleInputChangeNombre = (e) => {
+    const value = e.target.value;
+    setSearchValue2(value);
+  
+    if (value === ''){
+      setDataFiltrada2([]);
+      setActiveTable('');
+    }
+  }
+
+  //FILTRAR POR NOMBRE EMPRESA
+  const handleSearchEmp = () => {
+    fetchData(searchValue);
+    setActiveTable('table1');
+  }
+  
+  const handleKeyPressEmp = (e) => {
+    if (e.key === 'Enter') {
+      handleSearchEmp();
+    }
+  };
+
+  const handleInputChangeEmp = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+  
+    if (value === ''){
+      setDataFiltrada([]);
+      setActiveTable('');
+    }
+  }
+
   const columns = [
     {
       title: "Id",
@@ -193,10 +262,15 @@ export const Proveedores = () => {
         <Row gutter={10}>
           <Col xs={24} sm={4} md={6}>
             <Form.Item
-              label="Filtrar por Nombre"
+              label="Filtrar por Nombre del Proveedor"
             >
               <Input.Search
-                placeholder="Nombre"
+                placeholder="Nombre del Proveedor"
+                enterButton="Buscar"
+                value={searchValue2}
+                onChange={handleInputChangeNombre}
+                onKeyPress={handleKeyPressNombre}
+                onSearch={handleSearchNombre}
               />
             </Form.Item>
           </Col>
@@ -206,6 +280,11 @@ export const Proveedores = () => {
             >
               <Input.Search
                 placeholder="Nombre de la Empresa"
+                enterButton="Buscar"
+                value={searchValue}
+                onChange={handleInputChangeEmp}
+                onKeyPress={handleKeyPressEmp}
+                onSearch={handleSearchEmp}
               />
             </Form.Item>
           </Col>
@@ -216,14 +295,21 @@ export const Proveedores = () => {
         onClick={() => setVisible(true)}
         style={{ marginBottom: 20 }}
       >
-        Agregar Proovedor
+        Agregar Proveedor
       </Button>
-      <Table
-        dataSource={proveedores}
-        columns={columns}
-        pagination={{ pageSize: 5 }}
-        rowKey="key"
-      />
+
+      {activeTable === '' && (
+        <Table dataSource={proveedores} columns={columns} pagination={{ pageSize: 5 }} rowKey="key" />
+      )}
+
+      {activeTable === 'table1' && (
+        <Table dataSource={dataFiltrada} columns={columns} pagination={{ pageSize: 5 }} rowKey="key" />
+      )}
+
+      {activeTable === 'table2' && (
+        <Table dataSource={dataFiltrada2} columns={columns} pagination={{ pageSize: 5 }} rowKey="key" />
+      )}
+
       <Modal
         title={`${isEdit ? "Editar" : "Agregar"} Proveedor`}
         open={visible}
