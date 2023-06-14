@@ -37,9 +37,8 @@ export const Categorias = () => {
   };
 
   const onFinish = () => {
-    const errorFields = form.getFieldsError();
-    if(!errorFields) {
-      const _categoria = form.getFieldsValue();
+    const _categoria = form.getFieldsValue();
+    if(_categoria.descripcion) {
       //POST
       if (!isEdit) {
         setIsLoading(true);

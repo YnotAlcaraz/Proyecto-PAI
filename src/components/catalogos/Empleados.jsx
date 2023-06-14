@@ -12,8 +12,16 @@ import {
   Row,
 } from "antd";
 import axios from "axios";
+import dayjs from "dayjs";
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import weekday from "dayjs/plugin/weekday"
+import localeData from "dayjs/plugin/localeData"
+dayjs.extend(customParseFormat);
+dayjs.extend(weekday)
+dayjs.extend(localeData)
 
 export const Empleados = () => {
+  const [form] = Form.useForm();
   const url = "http://localhost:3000/empleados";
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -30,17 +38,23 @@ export const Empleados = () => {
   const [nombres, setNombres] = useState();
   const [rfc, setRfc] = useState();
   const [sexo, setSexo] = useState();
+  const dateFormat = 'DD/MM/YYYY';
 
-  useEffect(() => {
+  const fetchEmpleados = () => {
     axios
       .get(url)
       .then((res) => {
         setEmpleados(res.data);
       })
       .catch((err) => console.error(err));
+  }
+
+  useEffect(() => {
+    fetchEmpleados();
   }, [isLoading]);
 
   const onFinish = () => {
+    if (nombres && apellidoPaterno && apellidoMaterno && sexo && curp && fecha_nac && fecha_ini) {
       //POST
       if (!isEdit) {
         setIsLoading(true);
@@ -59,6 +73,8 @@ export const Empleados = () => {
           .then(() => {
             setIsLoading(false);
             setVisible(false);
+            fetchEmpleados();
+            form.resetFields();
           })
           .catch((err) => console.error(err));
       } else {
@@ -79,8 +95,13 @@ export const Empleados = () => {
           .then(() => {
             setIsLoading(false);
             setVisible(false);
+            fetchEmpleados();
+            form.resetFields();
           });
       }
+    } else {
+      alert('Por Favor Llene Los Campos Requeridos');
+    }
   };
 
   const onDelete = (id) => {
@@ -100,16 +121,18 @@ export const Empleados = () => {
       .get(`${url}/${id}`)
       .then((res) => {
         setEmpleado(res.data);
-        setApellidoMaterno(res.data.apellido_materno);
-        setApellidoPaterno(res.data.apellido_paterno);
-        setCurp(res.data.curp);
-        setFechaIni(res.data.fecha_ini);
-        setFechaNac(res.data.fecha_nac);
-        setIden(res.data.id);
-        setNoTel(res.data.no_tel);
-        setNombres(res.data.nombre);
-        setRfc(res.data.rfc);
-        setSexo(res.data.sexo);
+
+        form.setFieldsValue({
+          nombre: res.data.nombre,
+          apellido_paterno: res.data.apellido_paterno,
+          apellido_materno: res.data.apellido_materno,
+          sexo: res.data.sexo,
+          curp: res.data.curp,
+          fecha_nac: dayjs(res.data.fecha_nac, dateFormat),
+          rfc: res.data.rfc,
+          no_tel: res.data.no_tel,
+          fecha_ini: dayjs(res.data.fecha_ini, dateFormat),
+        });
       })
       .catch((err) => console.error(err));
   };
@@ -117,6 +140,7 @@ export const Empleados = () => {
   const onCancel = () => {
     setVisible(false);
     setIsEdit(false);
+    form.resetFields();
   };
 
   const columns = [
@@ -273,6 +297,7 @@ export const Empleados = () => {
         <Form
           layout="vertical"
           onFinish={onFinish}
+          form={form}
         >
           <Row gutter={10}>
             <Col xs={24} sm={24} md={8}>
@@ -370,6 +395,7 @@ export const Empleados = () => {
                   onChange={(e) => setFechaNac(e.format("DD/MM/YYYY"))}
                   style={{ width: '100%' }}
                   value={fechaNac}
+                  format="DD/MM/YYYY"
                 />
               </Form.Item>
             </Col>
@@ -409,6 +435,7 @@ export const Empleados = () => {
                   onChange={(e) => setFechaIni(e.format("DD/MM/YYYY"))}
                   style={{ width: '100%' }}
                   value={fechaIni}
+                  format="DD/MM/YYYY"
                 />
               </Form.Item>
             </Col>
