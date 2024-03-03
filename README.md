@@ -1,14 +1,11 @@
 # Proyecto-PAI
-Proyecto de Administración de Inventario
+Proyecto de Administración de Inventarios
 
-**Instalación de yarn**
->npm install yarn
-
-**Instalación de yarn dentro de la carpeta del proyecto**
->yarn
+**Instalación de librerias**
+> npm install
 
 **Correr proyecto**
->yarn dev
+> npm run dev
 
-# API
+# Backend
 https://github.com/YnotAlcaraz/PAI-API
